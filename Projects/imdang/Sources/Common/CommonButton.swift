@@ -88,7 +88,7 @@ class CommonButton: UIButton {
                 self.backgroundColor = .white
                 self.setTitleColor(.grayScale200, for: .normal)
                 self.layer.borderWidth = 1
-                self.layer.borderColor = UIColor.grayScale200.cgColor
+                self.layer.borderColor = UIColor.grayScale100.cgColor
             case .whiteBackBorderStyle:
                 self.isEnabled = true
                 self.backgroundColor = .white
