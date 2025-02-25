@@ -44,7 +44,7 @@ class CommomTextField: UITextField {
     }
     
     func setAttribute() {
-        self.font = .pretenSemiBold(16)
+        self.font = .pretenMedium(16)
         self.layer.borderColor = UIColor.grayScale100.cgColor
         self.textColor = UIColor.grayScale900
         self.backgroundColor = .white
@@ -53,6 +53,7 @@ class CommomTextField: UITextField {
         autocapitalizationType = .none
         
         self.placeholder = placeholderText
+        
         setKeyboardType(textfieldType)
         let clearButton = UIButton(type: .custom)
         clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
@@ -124,13 +125,14 @@ extension Reactive where Base: CommomTextField {
     }
 }
 
-// NumberPad Type
+// ...ㅠㅠ
 extension CommomTextField {
     
     func nickNameTypeBind(limitNum: Int) {
         self.rx.text
             .orEmpty
             .map { text in
+                self.font = text.isEmpty ? .pretenMedium(16) : .pretenSemiBold(16)
                 let limitedText = String(text.prefix(limitNum))
                 return limitedText
             }
@@ -142,6 +144,7 @@ extension CommomTextField {
         self.rx.text
             .orEmpty
             .map { text in
+                self.font = text.isEmpty ? .pretenMedium(16) : .pretenSemiBold(16)
                 let limitedText = String(text.prefix(20))
                 return limitedText
             }
@@ -154,6 +157,7 @@ extension CommomTextField {
         self.rx.text
             .orEmpty
             .map { text in
+                self.font = text.isEmpty ? .pretenMedium(16) : .pretenSemiBold(16)
                 let limitedText = String(text.prefix(10))
                 let formattedText = self.formatText(limitedText)
                 return formattedText
