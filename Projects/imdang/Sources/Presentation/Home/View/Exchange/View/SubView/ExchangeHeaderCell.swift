@@ -12,8 +12,7 @@ import Then
 import ReactorKit
 
 final class ExchangeHeaderCell: UITableViewCell {
-    
-    let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
     
     private let ticketView = TicketView()
     private let segmentControl = UISegmentedControl().then {
@@ -41,6 +40,7 @@ final class ExchangeHeaderCell: UITableViewCell {
     }
     private let exchangeStateButtonView = ExchangeStateButtonView()
     private let noticeScriptView = NoticeScriptView()
+    private let analyticsService = AnalyticsService.shared
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -99,6 +99,7 @@ final class ExchangeHeaderCell: UITableViewCell {
     func bind(reactor: ExchangeReactor) {
         
         segmentControl.rx.selectedSegmentIndex
+            .distinctUntilChanged()
             .map { index in
                 ExchangeReactor.Action.selectedRequestSegmentControl(index == 0 ? .request : .receive)
             }
@@ -121,19 +122,32 @@ final class ExchangeHeaderCell: UITableViewCell {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { ($0.selectedExchangeState, $0.insights) }
+            .map { ($0.selectedExchangeState, $0.insights?.count ?? 0) }
             .distinctUntilChanged( {
                 return $0 == $1
             })
-            .subscribe(onNext: { [weak self] exchangeState, insights in
+            .subscribe(onNext: { [weak self] exchangeState, insightsCount in
                 guard let self = self else { return }
-                
                 self.exchangeStateButtonView.waitingButton.rx.commonButtonState.onNext(exchangeState == .waiting ? .enabled : .unselectedBorderStyle)
                 self.exchangeStateButtonView.rejectButton.rx.commonButtonState.onNext(exchangeState == .reject ? .enabled : .unselectedBorderStyle)
                 self.exchangeStateButtonView.doneButton.rx.commonButtonState.onNext(exchangeState == .done ? .enabled : .unselectedBorderStyle)
                 
-                self.updateScript(state: exchangeState, num: insights?.count ?? 0)
-                self.updateButtonTitle(state: exchangeState, num: insights?.count ?? 0)
+                self.updateScript(state: exchangeState, num: insightsCount)
+                self.updateButtonTitle(state: exchangeState, num: insightsCount)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map { $0.selectedExchangeState }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] exchangeState in
+                guard let self = self else { return }
+                if reactor.currentSegmentState == .request {
+                    self.analyticsService.sendRequestStateClick(state: exchangeState.rawValue.replacingOccurrences(of: "교환 완료", with: "교환완료"))
+                } else {
+                    self.analyticsService.receivedRequestStateClick(state: exchangeState.rawValue.replacingOccurrences(of: "교환 완료", with: "교환완료"))
+                }
             })
             .disposed(by: disposeBag)
     }
@@ -188,5 +202,9 @@ final class ExchangeHeaderCell: UITableViewCell {
                 noticeScriptView.configure(text: "교환한 인사이트는 보관함에 저장되며, 완료 내역은\n최근 7일간의 기록만 표시돼요.")
             }
         }
+    }
+    
+    func config(couponCount: Int?) {
+        ticketView.configure(couponCount: couponCount)
     }
 }

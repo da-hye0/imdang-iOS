@@ -9,6 +9,7 @@ import Foundation
 import ReactorKit
 
 final class ExchangeReactor: Reactor {
+    var currentSegmentState: ExchangeRequestState = .receive
     private var disposeBag = DisposeBag()
     
     struct State {
@@ -41,6 +42,7 @@ final class ExchangeReactor: Reactor {
         case .loadInsights:
             let selectedRequestState = currentState.selectedRequestState
             let selectedExchangeState = currentState.selectedExchangeState
+            currentSegmentState = currentState.selectedRequestState
             
             switch selectedRequestState {
             case .request:
@@ -92,10 +94,8 @@ final class ExchangeReactor: Reactor {
         switch mutation {
         case .changeSelectedExchangeState(let exchangeState):
             state.selectedExchangeState = exchangeState
-            print("\(exchangeState)")
         case .changeSelectedRequestState(let requestState):
             state.selectedRequestState = requestState
-            print("\(requestState)")
         case let .setInsights(insights):
             state.insights = insights
         }

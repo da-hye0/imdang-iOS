@@ -172,18 +172,15 @@ class TicketModalViewController: UIViewController {
         acceptButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                
-                if let id = Bundle.main.object(forInfoDictionaryKey: "WELCOME_COUPON") as? String {
-                    couponService.issueCoupons(id: id)
-                        .subscribe { success in
-                            if success {
-                                UserdefaultKey.couponReceived = true
-                            } else {
-                                print("쿠폰 발급 실패")
-                            }
+                couponService.issueCoupons()
+                    .subscribe { success in
+                        if success {
+                            UserdefaultKey.couponReceived = true
+                        } else {
+                            print("쿠폰 발급 실패")
                         }
-                        .disposed(by: disposeBag)
-                }
+                    }
+                    .disposed(by: disposeBag)
                 dismiss(animated: true, completion: nil)
             })
             .disposed(by: disposeBag)

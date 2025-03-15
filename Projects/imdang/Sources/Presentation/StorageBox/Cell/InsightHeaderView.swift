@@ -46,6 +46,7 @@ class InsightHeaderView: UICollectionReusableView {
         self.backgroundColor = .white
         addSubViews()
         makeConstraints()
+        bindAction()
     }
     
     override func prepareForReuse() {

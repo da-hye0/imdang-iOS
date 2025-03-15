@@ -18,6 +18,7 @@ class WriteInsightEtcViewController: UIViewController, View {
     
     var disposeBag = DisposeBag()
     
+    private let analyticsService = AnalyticsService.shared
     private let insightSectionInfo: [InsightSectionInfo]
     private let categoryName: String!
     private var selectedSections: Set<Int> = []
@@ -123,10 +124,12 @@ class WriteInsightEtcViewController: UIViewController, View {
         
         reactor.state
             .map { $0.isUploadSuccess }
+            .filter { $0 != false }
             .distinctUntilChanged()
             .subscribe(onNext: { result in
                 self.showAlert(text: "인사이트 업로드가 완료되었어요.\n작성한 내 인사이트는 보관함에서\n확인할 수 있어요.", type: .moveButton) { [self] in
                     if let image = reactor.mainImage {
+                        self.analyticsService.insightWrite()
                         let vc = InsightDetailViewController(insight: reactor.detail, mainImage: image, showEditButton: false)
                         self.navigationController?.pushViewController(vc, animated: true)
                         if let firstVC = self.navigationController?.viewControllers.first {
@@ -134,6 +137,7 @@ class WriteInsightEtcViewController: UIViewController, View {
                         }
                     }
                 } etcAction: {
+                    self.analyticsService.insightWrite()
                     self.navigationController?.popToRootViewController(animated: true)
                     guard let tabBarController = self.tabBarController else { return }
                     tabBarController.selectedIndex = 2

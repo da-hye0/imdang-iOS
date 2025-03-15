@@ -16,7 +16,7 @@ class CouponService {
     private var disposeBag = DisposeBag()
     private let networkManager = NetworkManager()
     
-    func issueCoupons(id: String) -> Observable<Bool> {
+    func issueCoupons() -> Observable<Bool> {
         let parameters: [String: Any] = [
             "memberId": UserdefaultKey.memberId
         ]
@@ -26,6 +26,7 @@ class CouponService {
             path: "/coupons/issue",
             method: .post,
             headers: [.contentType("application/json"), .authorization(bearerToken: UserdefaultKey.accessToken)]
+//            parameters: parameters
         )
         
         return networkManager.requestOptional(with: endpoint)

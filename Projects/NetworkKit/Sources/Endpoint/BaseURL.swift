@@ -10,7 +10,7 @@ import Foundation
 internal import Alamofire
 
 public enum BaseURL: String {
-    case imdangAPI = "IMDANG_DEV_API"
+    case imdangAPI = "IMDANG_API"
     
     var configValue: String {
         if let infoDictionary: [String: Any] = Bundle.main.infoDictionary,

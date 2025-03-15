@@ -15,6 +15,11 @@ public struct BasicResponse: Codable {
 }
 
 public final class NetworkManager: Network {
+//    public var session = Session(interceptor: AuthInterceptor(), eventMonitors: [APIEventMonitor()])
+//    
+//    public init()  {
+////        self.session = session
+//    }
     var session: Session
     
     public init(session: Session = Session(eventMonitors: [APIEventMonitor()])) {
@@ -90,6 +95,7 @@ public final class NetworkManager: Network {
                                 print("❌ 에러 메세지: \(decodedError.message)")
                                 observer.onError(NSError(domain: decodedError.message, code: response.response?.statusCode ?? -1, userInfo: ["data": decodedError]))
                             } catch {
+                                print("❌ decodedError: \(error)")
                                 observer.onError(error)
                             }
                         } else {

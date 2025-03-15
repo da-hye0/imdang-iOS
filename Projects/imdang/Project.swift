@@ -41,6 +41,7 @@ let project = Project(
                             "CFBundleURLSchemes": ["$(GOOGLE_URL_KEY)"]
                         ],
                     ],
+                    "CFBundleDisplayName" : "아파트임당",
                     "KAKAO_URL_KEY": "$(KAKAO_URL_KEY)",
                     "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
                     "NAVER_APP_KEY_ID": "$(NAVER_APP_KEY_ID)",
