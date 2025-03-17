@@ -50,7 +50,7 @@ class TicketModalViewController: UIViewController {
         $0.textColor = .mainOrange500
         $0.backgroundColor = .mainOrange50
         $0.numberOfLines = 2
-        $0.setTextWithLineHeight(text: "무료 패스권 사용시 다른 사람들도\n길동님의 인사이트를 무료 패스권으로 볼 수 있어요", lineHeight: 19.6, textAlignment: .center)
+        $0.setTextWithLineHeight(text: "무료 패스권 사용시 다른 사람들도\n\(UserdefaultKey.memberNickname)님의 인사이트를 무료 패스권으로 볼 수 있어요", lineHeight: 19.6, textAlignment: .center)
         
         $0.layer.cornerRadius = 8
         $0.clipsToBounds = true

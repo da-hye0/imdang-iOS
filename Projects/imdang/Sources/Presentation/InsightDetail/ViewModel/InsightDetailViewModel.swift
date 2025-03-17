@@ -9,7 +9,6 @@ import UIKit
 import NetworkKit
 import RxSwift
 import Alamofire
-import CoreLocation
 
 enum RecommendResult {
     case success
