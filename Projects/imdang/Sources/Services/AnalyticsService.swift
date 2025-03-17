@@ -53,7 +53,7 @@ final class AnalyticsService {
             "category": "홈_탐색"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -65,7 +65,7 @@ final class AnalyticsService {
             "action": "지역별 인사이트 탐색_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -77,7 +77,7 @@ final class AnalyticsService {
             "action": "홈_지도_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -89,7 +89,7 @@ final class AnalyticsService {
             "action": "탐색_마이페이지_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -101,7 +101,7 @@ final class AnalyticsService {
             "action": "탐색_알림_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -113,7 +113,7 @@ final class AnalyticsService {
             "action": "메인배너_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -126,7 +126,7 @@ final class AnalyticsService {
             "label": aptName
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -139,7 +139,7 @@ final class AnalyticsService {
             "label": insightName
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -151,7 +151,7 @@ final class AnalyticsService {
             "action": "내가 작성_전체보기_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -164,7 +164,7 @@ final class AnalyticsService {
             "label": insightName
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -176,7 +176,7 @@ final class AnalyticsService {
             "action": "신규_전체보기_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -189,7 +189,7 @@ final class AnalyticsService {
             "label": insightName
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -201,7 +201,7 @@ final class AnalyticsService {
             "action": "추천_인사이트_swipe"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -214,7 +214,7 @@ final class AnalyticsService {
             "label": label
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -227,7 +227,7 @@ final class AnalyticsService {
             "category": "홈_교환소"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -240,7 +240,7 @@ final class AnalyticsService {
             "label": state
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -253,7 +253,7 @@ final class AnalyticsService {
             "label": insightName
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -266,7 +266,7 @@ final class AnalyticsService {
             "label": state
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -279,7 +279,7 @@ final class AnalyticsService {
             "label": insightName
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -291,7 +291,7 @@ final class AnalyticsService {
             "action": "교환소_마이페이지_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -303,7 +303,7 @@ final class AnalyticsService {
             "action": "교환소_알림_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -316,7 +316,7 @@ final class AnalyticsService {
             "label": label
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -330,7 +330,7 @@ final class AnalyticsService {
             "action": "지역_전체보기_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -342,7 +342,7 @@ final class AnalyticsService {
             "action": "지역_swipe"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -354,7 +354,7 @@ final class AnalyticsService {
             "action": "보관함_지도_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -367,7 +367,7 @@ final class AnalyticsService {
             "label": aptName
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -379,7 +379,7 @@ final class AnalyticsService {
             "action": "필터_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -392,7 +392,7 @@ final class AnalyticsService {
             "label": insightName
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -405,7 +405,7 @@ final class AnalyticsService {
             "label": label
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -419,7 +419,7 @@ final class AnalyticsService {
             "action": "작성완료_click"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -434,7 +434,7 @@ final class AnalyticsService {
             "label": state
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -447,7 +447,7 @@ final class AnalyticsService {
             "label": isOn ? "추천 on" : "추천 off"
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
     
@@ -462,7 +462,7 @@ final class AnalyticsService {
             "label": label
         ]
         
-        print(parameters)
+//        print(parameters)
         Analytics.logEvent(event, parameters: parameters)
     }
 }

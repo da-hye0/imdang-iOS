@@ -426,21 +426,21 @@ extension WriteInsightEtcViewController {
                 "주변환경*": { $0.infra.surroundings = convertItems },
                 "랜드마크*": { $0.infra.landmarks = convertItems },
                 "기피시설*": { $0.infra.unpleasantFacilities = convertItems },
-                "인프라 총평": { $0.infra.text = convertItems.first ?? "" }
+                "인프라 총평": { $0.infra.text = (convertItems.first ?? "").replacingOccurrences(of: "_", with: " ") }
             ],
             "단지 환경": [
                 "건물*": { $0.complexEnvironment.buildingCondition = convertItems },
                 "안전*": { $0.complexEnvironment.security = convertItems },
                 "어린이 시설*": { $0.complexEnvironment.childrenFacility = convertItems },
                 "경로 시설*": { $0.complexEnvironment.seniorFacility = convertItems },
-                "단지 환경 총평": { $0.complexEnvironment.text = convertItems.first ?? "" }
+                "단지 환경 총평": { $0.complexEnvironment.text = (convertItems.first ?? "").replacingOccurrences(of: "_", with: " ") }
             ],
             "단지 시설": [
                 "가족*": { $0.complexFacility.familyFacilities = convertItems },
                 "다목적*": { $0.complexFacility.multipurposeFacilities = convertItems },
                 "여가 (단지내부)*": { $0.complexFacility.leisureFacilities = convertItems },
                 "환경*": { $0.complexFacility.surroundings = convertItems },
-                "단지 시설 총평": { $0.complexFacility.text = convertItems.first ?? "" }
+                "단지 시설 총평": { $0.complexFacility.text = (convertItems.first ?? "").replacingOccurrences(of: "_", with: " ") }
             ],
             "호재": [
                 "교통*": { $0.favorableNews.transportations = convertItems },
@@ -450,7 +450,7 @@ extension WriteInsightEtcViewController {
                 "문화*": { $0.favorableNews.cultures = convertItems },
                 "산업*": { $0.favorableNews.industries = convertItems },
                 "정책*": { $0.favorableNews.policies = convertItems },
-                "호재 총평": { $0.favorableNews.text = convertItems.first ?? "" }
+                "호재 총평": { $0.favorableNews.text = (convertItems.first ?? "").replacingOccurrences(of: "_", with: " ") }
             ]
         ]
         

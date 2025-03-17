@@ -27,14 +27,13 @@ struct InsightIDResponse: Codable {
 
 final class InsightDetailViewModel {
     private var disposeBag = DisposeBag()
-    private let networkManager = NetworkManager(session: .default)
+    private let networkManager = NetworkManager()
     
     func requestInsight(thisInsightId: String, myInsightId: String? = nil, couponId: String? = nil) -> Observable<Bool> {
         var parameters: [String: Any] = [
             "requestedInsightId": thisInsightId,
             "requestMemberId": UserdefaultKey.memberId
         ]
-        
         if let myInsightId = myInsightId {
             parameters["requestMemberInsightId"] = myInsightId
         }

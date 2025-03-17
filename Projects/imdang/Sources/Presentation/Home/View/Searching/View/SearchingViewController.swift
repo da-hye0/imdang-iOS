@@ -307,7 +307,7 @@ extension SearchingViewController: UICollectionViewDataSource, UICollectionViewD
                     .disposed(by: disposeBag)
             }
         case 2:
-            analyticsService.todayNewInsightClick(insightName: myInsights.value[indexPath.row].titleName)
+            analyticsService.todayNewInsightClick(insightName: todayInsights.value[indexPath.row].titleName)
             searchingViewModel.loadInsightDetail(id: todayInsights.value[indexPath.row].insightId)
                 .subscribe { [self] data in
                     if let data = data {

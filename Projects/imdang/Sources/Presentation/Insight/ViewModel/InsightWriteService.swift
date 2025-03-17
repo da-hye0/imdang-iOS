@@ -18,7 +18,7 @@ final class InsightWriteService {
 
     func createInsight(dto: InsightDTO, image: UIImage) -> Observable<Bool> {
         return Observable<Bool>.create { observer in
-            guard let value = Bundle.main.object(forInfoDictionaryKey: "IMDANG_DEV_API") as? String, let baseUrl = value.removingPercentEncoding else {
+            guard let value = Bundle.main.object(forInfoDictionaryKey: "IMDANG_API") as? String, let baseUrl = value.removingPercentEncoding else {
                 observer.onNext(false)
                 observer.onCompleted()
                 return Disposables.create()

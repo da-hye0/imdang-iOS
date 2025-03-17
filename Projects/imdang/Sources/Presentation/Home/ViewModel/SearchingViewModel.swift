@@ -14,7 +14,7 @@ final class SearchingViewModel {
     var isLoading = false
     var totalElements: Int?
     private var disposeBag = DisposeBag()
-    private let networkManager = NetworkManager(session: .default)
+    private let networkManager = NetworkManager()
     
     func loadMyvisited() -> Observable<[String]?> {
         let endpoint = Endpoint<[ApartmentComplexResponse]>(
