@@ -23,6 +23,7 @@ final class InsightDetailViewController: BaseViewController {
     private var coupon: CouponsResponse?
     private let couponService = CouponService.shared
     private let analyticsService = AnalyticsService.shared
+    private let kakaoShareService = KakaoShareService()
     private let insightDetailViewModel = InsightDetailViewModel()
     private let selectedIndex = BehaviorRelay<Int?>(value: nil)
     private let accused = BehaviorRelay<Bool>(value: false)
@@ -326,6 +327,9 @@ final class InsightDetailViewController: BaseViewController {
         
         shareButton.rx.tap
             .subscribe(with: self, onNext: { owner, _ in
+                owner.kakaoShareService.insightKakaoShare(title: owner.insight.title, insightId: owner.insight.insightId, imageUrl: owner.insight.mainImage) { linkType in
+                    owner.openKakaoLink(kakaoLinkType: linkType)
+                }
             })
             .disposed(by: disposeBag)
         

@@ -46,7 +46,8 @@ let project = Project(
                         "kakaolink",
                         "kakaoplus",
                         "kakaotalk",
-                        "nmap"
+                        "nmap",
+                        "imdang"
                     ],
                     "CFBundleURLTypes" : [
                         [

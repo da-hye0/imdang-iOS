@@ -31,6 +31,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
         
+        print(url)
+        
         if (AuthApi.isKakaoTalkLoginUrl(url)) {
             _ = AuthController.rx.handleOpenUrl(url: url)
         }
