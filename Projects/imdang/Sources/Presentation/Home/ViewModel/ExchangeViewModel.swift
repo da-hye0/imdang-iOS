@@ -69,7 +69,7 @@ final class ExchangeViewModel {
                 ]
             ]
             
-            let endpoint = Endpoint<MyInsightResponse>(
+            let endpoint = Endpoint<InsightResponse>(
                 baseURL: .imdangAPI,
                 path: "/my-exchanges/requested-by-others",
                 method: .get,

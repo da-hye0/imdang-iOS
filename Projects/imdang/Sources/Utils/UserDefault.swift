@@ -65,7 +65,6 @@ enum UserdefaultKey {
         UserdefaultKey.isSiginedIn = false
         UserdefaultKey.memberId = ""
         UserdefaultKey.memberNickname = ""
-        UserdefaultKey.deviceToken = ""
         UserdefaultKey.accessToken = ""
         UserdefaultKey.refreshToken = ""
         UserdefaultKey.tokenTimeInterval = Date().timeIntervalSince1970

@@ -1,5 +1,20 @@
 import ProjectDescription
 
+let googleServiceInfoScript = TargetScript.post(
+    script: """
+    case "${CONFIGURATION}" in
+      "Debug" )
+        cp -r "$SRCROOT/Resources/GoogleService-Info-Debug.plist" "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist" ;;
+      "Release" )
+        cp -r "$SRCROOT/Resources/GoogleService-Info-Release.plist" "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist" ;;
+    *)
+      ;;
+    esac
+    """,
+    name: "Setup Firebase Environment GoogleService-info.plist",
+    basedOnDependencyAnalysis: false
+)
+
 let project = Project(
     name: "imdang",
     targets: [
@@ -65,6 +80,7 @@ let project = Project(
                 "Sources/App/LaunchScreen.storyboard",
             ],
             entitlements: "imdang.entitlements",
+            scripts: [googleServiceInfoScript],
             dependencies: [
                 .external(name: "Kingfisher"),
                 .external(name: "Alamofire"),
@@ -74,7 +90,6 @@ let project = Project(
                 .external(name: "RxSwift"),
                 .external(name: "RxCocoa"),
                 .external(name: "RxKakaoSDK"),
-//                .external(name: "KakaoSDK"),
                 .external(name: "FirebaseCrashlytics"),
                 .external(name: "FirebaseDynamicLinks"),
                 .external(name: "FirebaseMessaging"),
@@ -82,6 +97,7 @@ let project = Project(
                 .external(name: "FirebaseRemoteConfig"),
                 .external(name: "FirebaseAnalytics"),
                 .external(name: "NMapsMap"),
+                .external(name: "SkeletonView"),
                 .project(target: "NetworkKit", path: "../NetworkKit"),
                 .target(name: "SharedLibraries")
             ],
@@ -89,8 +105,8 @@ let project = Project(
                 // 하.. 구글로그인 에러 3시간동안 안되서 찾으니 tuist objc 충돌 이거쓰면 된다네요
                 base: ["OTHER_LDFLAGS":["-all_load -Objc"]],
                 configurations: [
-                    .debug(name: "Debug", xcconfig: "Config/Config.xcconfig"),
-                    .release(name: "Release", xcconfig: "Config/Config.xcconfig")
+                    .debug(name: "Debug", xcconfig: "Config/Debug.xcconfig"),
+                    .release(name: "Release", xcconfig: "Config/Release.xcconfig")
                 ]
             )
         ),
