@@ -5,7 +5,7 @@
 //  Created by 임대진 on 11/25/24.
 //
 
-import Foundation
+import UIKit
 
 public import Alamofire
 
@@ -38,6 +38,66 @@ public final class APIEventMonitor: EventMonitor {
         📲 Data: \(response.data?.toPrettyPrintedString ?? "")
 
         """)
+        if response.response?.statusCode ?? 0 >= 300, let prettyPrintedData = response.data?.toPrettyPrintedString, !prettyPrintedData.contains("J003") {
+            DispatchQueue.main.async {
+                self.showAlert(code: response.response?.statusCode ?? 0, message: prettyPrintedData)
+            }
+        }
+    }
+    
+    private func showAlert(code: Int, message: String) {
+        guard let windowScene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else {
+            return
+        }
+        
+        let alertController = UIAlertController(title: "Network \(code) Error", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        if let rootViewController = windowScene.windows.first?.rootViewController {
+            if let presentedViewController = rootViewController.presentedViewController {
+                presentedViewController.dismiss(animated: false) {
+                    rootViewController.present(alertController, animated: true, completion: nil)
+                }
+            } else {
+                rootViewController.present(alertController, animated: true, completion: nil)
+            }
+        }
+    }
+}
+
+public final class APIDebugEventMonitor: EventMonitor {
+
+    public let queue = DispatchQueue(label: "APIDebugEventMonitor")
+    
+    public init() { }
+    
+    public func request<Value>(_ request: DataRequest, didParseResponse response: DataResponse<Value, AFError>) {
+        if response.response?.statusCode ?? 0 >= 300, let prettyPrintedData = response.data?.toPrettyPrintedString, !prettyPrintedData.contains("J003") {
+            DispatchQueue.main.async {
+                self.showAlert(code: response.response?.statusCode ?? 0, message: prettyPrintedData)
+            }
+        }
+    }
+    
+    private func showAlert(code: Int, message: String) {
+        guard let windowScene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else {
+            return
+        }
+        
+        let alertController = UIAlertController(title: "Network \(code) Error", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        if let rootViewController = windowScene.windows.first?.rootViewController {
+            if let presentedViewController = rootViewController.presentedViewController {
+                presentedViewController.dismiss(animated: false) {
+                    rootViewController.present(alertController, animated: true, completion: nil)
+                }
+            } else {
+                rootViewController.present(alertController, animated: true, completion: nil)
+            }
+        }
     }
 }
 

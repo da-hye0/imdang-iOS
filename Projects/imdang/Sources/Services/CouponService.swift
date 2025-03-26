@@ -16,10 +16,24 @@ class CouponService {
     private var disposeBag = DisposeBag()
     private let networkManager = NetworkManager()
     
-    func issueCoupons(id: String) -> Observable<Bool> {
-        let parameters: [String: Any] = [
-            "memberId": UserdefaultKey.memberId
-        ]
+    func loadMyNickname() -> Observable<String?> {
+        let endpoint = Endpoint<UserDetail>(
+            baseURL: .imdangAPI,
+            path: "/members/detail",
+            method: .get,
+            headers: [.contentType("application/json"), .authorization(bearerToken: UserdefaultKey.accessToken)]
+        )
+        
+        return networkManager.request(with: endpoint)
+            .map {
+                return $0.nickname
+            }
+            .catch { _ in
+                return .just(nil)
+            }
+    }
+    
+    func issueCoupons() -> Observable<Bool> {
         
         let endpoint = Endpoint<BasicResponse>(
             baseURL: .imdangAPI,

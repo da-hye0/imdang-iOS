@@ -15,6 +15,7 @@ class AreaModalViewController: UIViewController {
     let selectedComplex = BehaviorRelay<String?>(value: nil)
     private var tableView: UITableView!
     private var complexes: [AptComplexByDistrict]?
+    private let analyticsService = AnalyticsService.shared
     private let grabber = UIButton().then {
         $0.backgroundColor = .grayScale200
         $0.layer.cornerRadius = 3
@@ -84,6 +85,9 @@ extension AreaModalViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let name = complexes?[indexPath.row].apartmentComplexName {
+            analyticsService.storagefilterClick(aptName: name)
+        }
         selectedComplex.accept(complexes?[indexPath.row].apartmentComplexName)
         self.dismiss(animated: true)
     }

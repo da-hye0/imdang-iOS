@@ -12,7 +12,7 @@ import RxSwift
 
 final class ExchangeViewModel {
     private var disposeBag = DisposeBag()
-    private let networkManager = NetworkManager(session: .default)
+    private let networkManager = NetworkManager()
     
     func loadRequestedByMe(state: DetailExchangeState) -> Observable<[Insight]?> {
         return Observable.create { [self] observer in
@@ -69,7 +69,7 @@ final class ExchangeViewModel {
                 ]
             ]
             
-            let endpoint = Endpoint<MyInsightResponse>(
+            let endpoint = Endpoint<InsightResponse>(
                 baseURL: .imdangAPI,
                 path: "/my-exchanges/requested-by-others",
                 method: .get,

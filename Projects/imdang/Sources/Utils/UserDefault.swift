@@ -56,9 +56,6 @@ enum UserdefaultKey {
     @UserDefault(key: "wirteToolTip", defaultValue: false)
     static var wirteToolTip: Bool
     
-    @UserDefault(key: "couponCount", defaultValue: nil)
-    static var couponCount: Int?
-    
     @UserDefault(key: "signInType", defaultValue: "")
     static var signInType: String
     
@@ -68,15 +65,13 @@ enum UserdefaultKey {
         UserdefaultKey.isSiginedIn = false
         UserdefaultKey.memberId = ""
         UserdefaultKey.memberNickname = ""
-        UserdefaultKey.deviceToken = ""
         UserdefaultKey.accessToken = ""
         UserdefaultKey.refreshToken = ""
-        UserdefaultKey.tokenTimeInterval = nil
+        UserdefaultKey.tokenTimeInterval = Date().timeIntervalSince1970
         UserdefaultKey.dontSeeToday = ""
         UserdefaultKey.couponReceived = false
         UserdefaultKey.homeToolTip = false
         UserdefaultKey.wirteToolTip = false
-        UserdefaultKey.couponCount = nil
         UserdefaultKey.signInType = ""
         
         UserDefaults.standard.synchronize()

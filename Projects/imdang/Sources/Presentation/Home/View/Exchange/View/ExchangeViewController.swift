@@ -18,7 +18,10 @@ final class ExchangeViewController: UIViewController, UITableViewDelegate, UITab
     
     let searchingViewModel = SearchingViewModel()
     var disposeBag = DisposeBag()
+    private let couponService = CouponService.shared
+    private let analyticsService = AnalyticsService.shared
     private let tableView = UITableView(frame: .zero, style: .plain)
+    private var couponCount: Int?
     private var insights: [Insight] = []
 
     init(reactor: ExchangeReactor) {
@@ -38,7 +41,7 @@ final class ExchangeViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        super.viewWillAppear(animated)
         
         reactor?.action.onNext(.loadInsights)
     }
@@ -46,6 +49,15 @@ final class ExchangeViewController: UIViewController, UITableViewDelegate, UITab
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         AnalyticsService().screenEvent(ScreenName: .homeExchange)
+        loadCouponCount()
+    }
+    
+    private func loadCouponCount() {
+        couponService.getCoupons()
+            .subscribe { result in
+                self.couponCount = result.couponCount
+                self.tableView.reloadData()
+            }.disposed(by: disposeBag)
     }
     
     private func setupTableView() {
@@ -106,6 +118,7 @@ final class ExchangeViewController: UIViewController, UITableViewDelegate, UITab
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ExchangeHeaderCell", for: indexPath) as! ExchangeHeaderCell
             cell.bind(reactor: reactor!)
+            cell.config(couponCount: couponCount)
             cell.selectionStyle = .none
             return cell
         } else {
@@ -131,7 +144,11 @@ final class ExchangeViewController: UIViewController, UITableViewDelegate, UITab
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 { return }
-        print("\(indexPath.row)")
+        if reactor?.currentSegmentState == .request {
+            analyticsService.sendRequestInsightClick(insightName: insights[indexPath.row].titleName)
+        } else {
+            analyticsService.receivedRequestInsightClick(insightName: insights[indexPath.row].titleName)
+        }
         searchingViewModel.loadInsightDetail(id: insights[indexPath.row].insightId)
             .subscribe { [self] data in
                 if let data = data {

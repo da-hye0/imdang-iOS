@@ -20,6 +20,7 @@ class MyInsightsModalViewController: UIViewController {
     private var myInsights: [Insight]?
     private let disposeBag = DisposeBag()
     private let couponService = CouponService.shared
+    private let analyticsService = AnalyticsService.shared
     private let insightDetailViewModel = InsightDetailViewModel()
     
     private let grabber = UIButton().then {
@@ -116,6 +117,7 @@ class MyInsightsModalViewController: UIViewController {
                     owner.insightDetailViewModel.requestInsight(thisInsightId: owner.insightId, myInsightId: selectedInsightId)
                         .subscribe(onNext: {
                             if $0 {
+                                owner.analyticsService.insightExchangeState(state: "요청")
                                 owner.showAlert(text: "교환 요청을 완료했어요.\n교환 내역은 교환소에서 확인해보세요.", moveButtonTitle: "교환소 확인하기", type: .moveButton) {
                                     owner.dismiss(animated: true)
                                     owner.resultSend?(true)
@@ -131,6 +133,7 @@ class MyInsightsModalViewController: UIViewController {
                     owner.insightDetailViewModel.requestInsight(thisInsightId: owner.insightId, couponId: "\(couponId)")
                         .subscribe(onNext: {
                             if $0 {
+                                owner.analyticsService.insightExchangeState(state: "요청")
                                 owner.showAlert(text: "교환 요청을 완료했어요.\n교환 내역은 교환소에서 확인해보세요.", moveButtonTitle: "교환소 확인하기", type: .moveButton) {
                                     owner.dismiss(animated: true)
                                     owner.resultSend?(true)
@@ -159,7 +162,7 @@ extension MyInsightsModalViewController: UITableViewDelegate, UITableViewDataSou
         cell.selectionStyle = .none
         switch indexPath.row {
         case 0:
-            cell.config(type: .ticket, ticketCount: UserdefaultKey.couponCount)
+            cell.config(type: .ticket, ticketCount: coupon?.couponCount)
         default:
             guard let myInsights = myInsights else { return cell }
             cell.config(type: .insight, insight: myInsights[indexPath.row - 1])

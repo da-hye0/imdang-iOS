@@ -154,7 +154,6 @@ final class SigninViewController: UIViewController, View {
     }
     
     func bind(reactor: SigninReactor) {
-        let vc = OnboardingContainerViewController()
         
         self.appleButton.rx.tap
             .map { SigninReactor.Action.tapAppleButton }
@@ -171,6 +170,7 @@ final class SigninViewController: UIViewController, View {
                     if UserdefaultKey.isJoined {
                         (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.changeRootView(TabBarController(), animated: true)
                     } else {
+                        let vc = OnboardingContainerViewController()
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 case .failure(let error):
@@ -186,13 +186,14 @@ final class SigninViewController: UIViewController, View {
         
         reactor.state
             .map { $0.isKakaoSigninSuccess }
-//            .distinctUntilChanged()
+            .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 if UserdefaultKey.isJoined {
                     (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.changeRootView(TabBarController(), animated: true)
                 } else {
+                    let vc = OnboardingContainerViewController()
                     navigationController?.pushViewController(vc, animated: true)
                 }
             })
@@ -206,13 +207,14 @@ final class SigninViewController: UIViewController, View {
         
         reactor.state
             .map { $0.isGoogleSigninSuccess }
-//            .distinctUntilChanged()
+            .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 if UserdefaultKey.isJoined {
                     (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.changeRootView(TabBarController(), animated: true)
                 } else {
+                    let vc = OnboardingContainerViewController()
                     navigationController?.pushViewController(vc, animated: true)
                 }
             })

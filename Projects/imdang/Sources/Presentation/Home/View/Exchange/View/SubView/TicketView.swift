@@ -24,6 +24,7 @@ final class TicketView: UIView {
     }
     
     private let ticketNumberLabel = UILabel().then {
+        $0.text = "0개"
         $0.font = .pretenSemiBold(16)
         $0.textColor = .mainOrange500
         $0.numberOfLines = 0
@@ -32,7 +33,6 @@ final class TicketView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
-        ticketNumberLabel.text = "\(UserdefaultKey.couponCount ?? 0)개"
     }
     
     required init?(coder: NSCoder) {
@@ -63,7 +63,7 @@ final class TicketView: UIView {
         }
     }
     
-    func configure(ticketNum: Int) {
-        ticketNumberLabel.text = "\(ticketNum)개"
+    func configure(couponCount: Int?) {
+        ticketNumberLabel.text = "\(couponCount ?? 0)개"
     }
 }

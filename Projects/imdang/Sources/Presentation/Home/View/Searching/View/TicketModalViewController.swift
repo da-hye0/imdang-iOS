@@ -50,7 +50,6 @@ class TicketModalViewController: UIViewController {
         $0.textColor = .mainOrange500
         $0.backgroundColor = .mainOrange50
         $0.numberOfLines = 2
-        $0.setTextWithLineHeight(text: "무료 패스권 사용시 다른 사람들도\n길동님의 인사이트를 무료 패스권으로 볼 수 있어요", lineHeight: 19.6, textAlignment: .center)
         
         $0.layer.cornerRadius = 8
         $0.clipsToBounds = true
@@ -81,6 +80,12 @@ class TicketModalViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        couponService.loadMyNickname()
+            .subscribe { nickName in
+                self.descriptionLabel.setTextWithLineHeight(text: "무료 패스권 사용시 다른 사람들도\n\(String(describing: nickName ?? "사용자"))님의 인사이트를 무료 패스권으로 볼 수 있어요", lineHeight: 19.6, textAlignment: .center)
+            }
+            .disposed(by: disposeBag)
         
         addSubViews()
         makeConstraints()
@@ -172,18 +177,15 @@ class TicketModalViewController: UIViewController {
         acceptButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                
-                if let id = Bundle.main.object(forInfoDictionaryKey: "WELCOME_COUPON") as? String {
-                    couponService.issueCoupons(id: id)
-                        .subscribe { success in
-                            if success {
-                                UserdefaultKey.couponReceived = true
-                            } else {
-                                print("쿠폰 발급 실패")
-                            }
+                couponService.issueCoupons()
+                    .subscribe { success in
+                        if success {
+                            UserdefaultKey.couponReceived = true
+                        } else {
+                            print("쿠폰 발급 실패")
                         }
-                        .disposed(by: disposeBag)
-                }
+                    }
+                    .disposed(by: disposeBag)
                 dismiss(animated: true, completion: nil)
             })
             .disposed(by: disposeBag)

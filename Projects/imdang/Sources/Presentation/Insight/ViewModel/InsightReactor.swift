@@ -85,6 +85,7 @@ class InsightReactor: Reactor {
                 return insightService.createInsight(dto: data, image: image)
                     .map { success in
                         print("Upload success state updated: \(success)")
+                        self.detail.memberNickname = UserdefaultKey.memberNickname
                         return Mutation.setUploadSuccess(success)
                     }
                     .catch { error in

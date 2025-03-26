@@ -75,12 +75,8 @@ class ServerJoinService {
             }
     }
     
-    func checkTokenExpired() {
-        guard let savedTime = UserdefaultKey.tokenTimeInterval else { return }
-        let expirationTime: TimeInterval = 18000
-        let currentTime = Date().timeIntervalSince1970
-
-        if (currentTime - savedTime) >= expirationTime {
+    func checkTokenExpired(splash: Bool = false) {
+        if splash && UserdefaultKey.isSiginedIn == true {
             tokenReissue()
                 .subscribe { result in
                     print(result ? "토근 갱신 완료" : "토근 갱신 실패")
@@ -90,7 +86,22 @@ class ServerJoinService {
                 }
                 .disposed(by: disposeBag)
         } else {
-            print("토큰 만료 \((savedTime + expirationTime) - currentTime)초전")
+            guard let savedTime = UserdefaultKey.tokenTimeInterval else { return }
+            let expirationTime: TimeInterval = 18000
+            let currentTime = Date().timeIntervalSince1970
+            
+            if (currentTime - savedTime) >= expirationTime {
+                tokenReissue()
+                    .subscribe { result in
+                        print(result ? "토근 갱신 완료" : "토근 갱신 실패")
+                        if result == false {
+                            (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.changeRootView(SigninViewController(), animated: true)
+                        }
+                    }
+                    .disposed(by: disposeBag)
+            } else {
+                print("토큰 만료 \((savedTime + expirationTime) - currentTime)초전")
+            }
         }
     }
     
@@ -99,7 +110,6 @@ class ServerJoinService {
             "memberId": UserdefaultKey.memberId,
             "refreshToken": UserdefaultKey.refreshToken
         ]
-        print("parameters : \(parameters)")
         
         let endpoint = Endpoint<TokenResponse>(
             baseURL: .imdangAPI,
@@ -120,6 +130,7 @@ class ServerJoinService {
             }
             .catch { error in
                 print("Error: \(error.localizedDescription)")
+                (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.changeRootView(SigninViewController(), animated: true)
                 return Observable.just(false)
             }
     }

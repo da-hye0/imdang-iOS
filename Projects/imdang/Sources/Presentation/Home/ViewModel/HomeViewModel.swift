@@ -18,7 +18,7 @@ struct TokenResponse: Codable {
 
 final class HomeViewModel {
     private var disposeBag = DisposeBag()
-    private let networkManager = NetworkManager(session: .default)
+    private let networkManager = NetworkManager()
     
     func loadMyNickname() {
         let endpoint = Endpoint<UserDetail>(

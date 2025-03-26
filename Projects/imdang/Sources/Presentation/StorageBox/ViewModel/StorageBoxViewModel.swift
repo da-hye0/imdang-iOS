@@ -20,7 +20,7 @@ final class StorageBoxViewModel {
     var totalPage = 0
     var isLoading: Bool = false
     private var disposeBag = DisposeBag()
-    private let networkManager = NetworkManager(session: .default)
+    private let networkManager = NetworkManager()
     
     // 단지별보기 모달 데이터
     func loadMyComplexes(address: AddressResponse) -> Observable<[AptComplexByDistrict]?> {

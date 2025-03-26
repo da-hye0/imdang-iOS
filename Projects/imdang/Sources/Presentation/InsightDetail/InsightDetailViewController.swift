@@ -22,6 +22,8 @@ final class InsightDetailViewController: BaseViewController {
     private var myInsights: [Insight]?
     private var coupon: CouponsResponse?
     private let couponService = CouponService.shared
+    private let analyticsService = AnalyticsService.shared
+    private let kakaoShareService = KakaoShareService()
     private let insightDetailViewModel = InsightDetailViewModel()
     private let selectedIndex = BehaviorRelay<Int?>(value: nil)
     private let accused = BehaviorRelay<Bool>(value: false)
@@ -258,6 +260,7 @@ final class InsightDetailViewController: BaseViewController {
                 owner.insightDetailViewModel.acceptInsight(exchangeRequestId: owner.insight.exchangeRequestId ?? "")
                     .subscribe(onNext: {
                         if $0 {
+                            owner.analyticsService.insightExchangeState(state: "수락")
                             owner.showAlert(text: "교환을 수락했어요.\n교환한 인사이트는 보관함에서\n확인할 수 있어요.", type: .moveButton, imageType: .circleCheck) {
                                 owner.exchangeState = .accepted
                                 owner.updateButton()
@@ -281,6 +284,7 @@ final class InsightDetailViewController: BaseViewController {
                 owner.insightDetailViewModel.rejecttInsight(exchangeRequestId: owner.insight.exchangeRequestId ?? "")
                     .subscribe(onNext: {
                         if $0 {
+                            owner.analyticsService.insightExchangeState(state: "거절")
                             owner.showAlert(text: "교환을 거절했어요.", type: .confirmOnly, imageType: .circleCheck)
                             owner.navigationController?.popViewController(animated: true)
                         }
@@ -323,6 +327,9 @@ final class InsightDetailViewController: BaseViewController {
         
         shareButton.rx.tap
             .subscribe(with: self, onNext: { owner, _ in
+                owner.kakaoShareService.insightKakaoShare(title: owner.insight.title, insightId: owner.insight.insightId, imageUrl: owner.insight.mainImage) { linkType in
+                    owner.openKakaoLink(kakaoLinkType: linkType)
+                }
             })
             .disposed(by: disposeBag)
         
@@ -416,6 +423,7 @@ extension InsightDetailViewController: UITableViewDataSource, UITableViewDelegat
                             switch result {
                             case .success:
                                 cell.likeInsight()
+                                owner.analyticsService.insightLike(isOn: true)
                             case .failure:
                                 break
                             case .recommended:

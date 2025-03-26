@@ -16,8 +16,9 @@ import RxRelay
 class SearchingViewController: UIViewController {
     private var disposeBag = DisposeBag()
     private var apartmentComplexes: [String]?
-    private let searchingViewModel = SearchingViewModel()
     private var selectedIndex: Int = 0
+    private let searchingViewModel = SearchingViewModel()
+    private let analyticsService = AnalyticsService.shared
     private let myInsights = BehaviorRelay<[Insight]>(value: [])
     private let todayInsights = BehaviorRelay<[Insight]>(value: [])
     private let topInsights = BehaviorRelay<[Insight]>(value: [])
@@ -50,7 +51,7 @@ class SearchingViewController: UIViewController {
         
         selectedIndex = 0
         loadInsightData()
-        AnalyticsService().screenEvent(ScreenName: .homeSearch)
+        analyticsService.screenEvent(ScreenName: .homeSearch)
     }
     
     private func fetchMyVisitedInsight(aptName: String) {
@@ -124,6 +125,7 @@ class SearchingViewController: UIViewController {
     func bindActions() {
         searchBoxView.searchButton.rx.tap
             .subscribe(with: self) { owner, _ in
+                owner.analyticsService.insightSearch()
                 let vc = AddressListViewController()
                 vc.hidesBottomBarWhenPushed = true
                 owner.navigationController?.pushViewController(vc, animated: true)
@@ -132,10 +134,18 @@ class SearchingViewController: UIViewController {
         
         searchBoxView.mapButton.rx.tap
             .subscribe(with: self) { owner, _ in
+                owner.analyticsService.searchMapButtonClick()
                 let vc = MapViewController()
                 vc.config(type: .search)
                 vc.hidesBottomBarWhenPushed = true
                 owner.navigationController?.pushViewController(vc, animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        currentPage
+            .distinctUntilChanged()
+            .subscribe(with: self) { owner, _ in
+                owner.analyticsService.topTenInsightSwipe()
             }
             .disposed(by: disposeBag)
     }
@@ -279,11 +289,13 @@ extension SearchingViewController: UICollectionViewDataSource, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
+            analyticsService.bannerClick()
             let vc =  IntroViewController(type: .normal)
             vc.hidesBottomBarWhenPushed = false
             self.navigationController?.pushViewController(vc, animated: true)
         case 1:
             if !myInsights.value.isEmpty {
+                analyticsService.insightClick(insightName: myInsights.value[indexPath.row].titleName)
                 searchingViewModel.loadInsightDetail(id: myInsights.value[indexPath.row].insightId)
                     .subscribe { [self] data in
                         if let data = data {
@@ -295,6 +307,7 @@ extension SearchingViewController: UICollectionViewDataSource, UICollectionViewD
                     .disposed(by: disposeBag)
             }
         case 2:
+            analyticsService.todayNewInsightClick(insightName: todayInsights.value[indexPath.row].titleName)
             searchingViewModel.loadInsightDetail(id: todayInsights.value[indexPath.row].insightId)
                 .subscribe { [self] data in
                     if let data = data {
@@ -305,6 +318,7 @@ extension SearchingViewController: UICollectionViewDataSource, UICollectionViewD
                 }
                 .disposed(by: disposeBag)
         case 3:
+            analyticsService.topTenInsightClick(insightName: topInsights.value[indexPath.row].titleName)
             searchingViewModel.loadInsightDetail(id: topInsights.value[indexPath.row].insightId)
                 .subscribe { [self] data in
                     if let data = data {
@@ -332,6 +346,7 @@ extension SearchingViewController: UICollectionViewDataSource, UICollectionViewD
                 let title = "내가 다녀온 단지의 다른 인사이트"
                 headerView.configure(with: title, type: .notTopten, showHorizontalCollection: apartmentComplexes == nil ? false : true, aptItems: apartmentComplexes, index: selectedIndex)
                 headerView.buttonAction = {
+                    self.analyticsService.insightFullClick()
                     fullVC.config(type: .my, title: title, chipItems: self.apartmentComplexes)
                     self.navigationController?.pushViewController(fullVC, animated: true)
                 }
@@ -346,6 +361,7 @@ extension SearchingViewController: UICollectionViewDataSource, UICollectionViewD
                     .distinctUntilChanged()
                     .subscribe(with: self) { owner, selected in
                         guard let selected = selected else { return }
+                        owner.analyticsService.insightComplexClick(aptName: selected)
                         owner.fetchMyVisitedInsight(aptName: selected)
                     }
                     .disposed(by: disposeBag)
@@ -353,6 +369,7 @@ extension SearchingViewController: UICollectionViewDataSource, UICollectionViewD
                 let title = "오늘 새롭게 올라온 인사이트"
                 headerView.configure(with: title, type: .notTopten, showHorizontalCollection: false)
                 headerView.buttonAction = {
+                    self.analyticsService.todayNewInsightFullClick()
                     fullVC.config(type: .today, title: title, myInsights: self.myInsights.value, chipViewHidden: true)
                     self.navigationController?.pushViewController(fullVC, animated: true)
                 }

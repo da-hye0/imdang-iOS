@@ -18,6 +18,7 @@ class WriteInsightEtcViewController: UIViewController, View {
     
     var disposeBag = DisposeBag()
     
+    private let analyticsService = AnalyticsService.shared
     private let insightSectionInfo: [InsightSectionInfo]
     private let categoryName: String!
     private var selectedSections: Set<Int> = []
@@ -102,6 +103,7 @@ class WriteInsightEtcViewController: UIViewController, View {
                 case "단지 시설":
                     owner.reactor?.action.onNext( .tapFacilityInfoConfirm(owner.baseInfo.complexFacility) )
                 case "호재":
+                    owner.nextButtonView.isEnable = false
                     owner.reactor?.action.onNext( .tapFavorableNewsInfoConfirm(owner.baseInfo.favorableNews) )
                 default:
                     break
@@ -123,10 +125,12 @@ class WriteInsightEtcViewController: UIViewController, View {
         
         reactor.state
             .map { $0.isUploadSuccess }
+            .filter { $0 != false }
             .distinctUntilChanged()
             .subscribe(onNext: { result in
                 self.showAlert(text: "인사이트 업로드가 완료되었어요.\n작성한 내 인사이트는 보관함에서\n확인할 수 있어요.", type: .moveButton) { [self] in
                     if let image = reactor.mainImage {
+                        self.analyticsService.insightWrite()
                         let vc = InsightDetailViewController(insight: reactor.detail, mainImage: image, showEditButton: false)
                         self.navigationController?.pushViewController(vc, animated: true)
                         if let firstVC = self.navigationController?.viewControllers.first {
@@ -134,10 +138,12 @@ class WriteInsightEtcViewController: UIViewController, View {
                         }
                     }
                 } etcAction: {
+                    self.analyticsService.insightWrite()
                     self.navigationController?.popToRootViewController(animated: true)
                     guard let tabBarController = self.tabBarController else { return }
                     tabBarController.selectedIndex = 2
                 }
+                self.nextButtonView.isEnable = true
             })
             .disposed(by: disposeBag)
     }
@@ -422,21 +428,21 @@ extension WriteInsightEtcViewController {
                 "주변환경*": { $0.infra.surroundings = convertItems },
                 "랜드마크*": { $0.infra.landmarks = convertItems },
                 "기피시설*": { $0.infra.unpleasantFacilities = convertItems },
-                "인프라 총평": { $0.infra.text = convertItems.first ?? "" }
+                "인프라 총평": { $0.infra.text = (convertItems.first ?? "").replacingOccurrences(of: "_", with: " ") }
             ],
             "단지 환경": [
                 "건물*": { $0.complexEnvironment.buildingCondition = convertItems },
                 "안전*": { $0.complexEnvironment.security = convertItems },
                 "어린이 시설*": { $0.complexEnvironment.childrenFacility = convertItems },
                 "경로 시설*": { $0.complexEnvironment.seniorFacility = convertItems },
-                "단지 환경 총평": { $0.complexEnvironment.text = convertItems.first ?? "" }
+                "단지 환경 총평": { $0.complexEnvironment.text = (convertItems.first ?? "").replacingOccurrences(of: "_", with: " ") }
             ],
             "단지 시설": [
                 "가족*": { $0.complexFacility.familyFacilities = convertItems },
                 "다목적*": { $0.complexFacility.multipurposeFacilities = convertItems },
                 "여가 (단지내부)*": { $0.complexFacility.leisureFacilities = convertItems },
                 "환경*": { $0.complexFacility.surroundings = convertItems },
-                "단지 시설 총평": { $0.complexFacility.text = convertItems.first ?? "" }
+                "단지 시설 총평": { $0.complexFacility.text = (convertItems.first ?? "").replacingOccurrences(of: "_", with: " ") }
             ],
             "호재": [
                 "교통*": { $0.favorableNews.transportations = convertItems },
@@ -446,7 +452,7 @@ extension WriteInsightEtcViewController {
                 "문화*": { $0.favorableNews.cultures = convertItems },
                 "산업*": { $0.favorableNews.industries = convertItems },
                 "정책*": { $0.favorableNews.policies = convertItems },
-                "호재 총평": { $0.favorableNews.text = convertItems.first ?? "" }
+                "호재 총평": { $0.favorableNews.text = (convertItems.first ?? "").replacingOccurrences(of: "_", with: " ") }
             ]
         ]
         

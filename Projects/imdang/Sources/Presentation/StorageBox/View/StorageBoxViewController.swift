@@ -23,6 +23,7 @@ final class StorageBoxViewController: BaseViewController {
     private let addresses = BehaviorRelay<[AddressResponse]>(value: [])
     private let insights = BehaviorRelay<[Insight]>(value: [])
     
+    private let analyticsService = AnalyticsService.shared
     private let storageBoxViewModel = StorageBoxViewModel()
     
     private var collectionView: UICollectionView!
@@ -216,12 +217,14 @@ final class StorageBoxViewController: BaseViewController {
                     owner.loadInsightData(address: owner.addresses.value[currentPage])
                     owner.loadMyComplexes(address: owner.addresses.value[currentPage])
                     owner.selectedComplex.accept(nil)
+                    owner.analyticsService.storageBoxSwipe()
                 }
             }
             .disposed(by: disposeBag)
         
         mapButton.rx.tap
             .subscribe(with: self) { owner, _ in
+                owner.analyticsService.storageBoxMapButtonClick()
                 let vc = MapViewController()
                 vc.config(type: .storage)
                 vc.hidesBottomBarWhenPushed = true
@@ -384,6 +387,7 @@ extension StorageBoxViewController: UICollectionViewDataSource, UICollectionView
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch indexPath.section {
         case 2:
+            analyticsService.storageInsightClick(insightName: insights.value[indexPath.row].titleName)
             storageBoxViewModel.loadInsightDetail(id: insights.value[indexPath.row].insightId)
                 .subscribe { [self] data in
                     if let data = data {
@@ -430,12 +434,14 @@ extension StorageBoxViewController: UICollectionViewDataSource, UICollectionView
 
 extension StorageBoxViewController: ReusableViewDelegate {
     func disTapSortButton(isOn: Bool) {
+        if isOn { analyticsService.storageMyFilterOn() }
         toggleState = isOn
         pageIndex = 0
         loadInsightData(address: addresses.value[currentPage.value])
     }
     
     func didTapFullViewButton() {
+        analyticsService.storageBoxFullClick()
         let vc = AreaListViewController()
         vc.config(addresses: addresses.value)
         vc.hidesBottomBarWhenPushed = true

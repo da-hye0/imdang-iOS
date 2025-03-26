@@ -9,12 +9,16 @@ import UIKit
 import SnapKit
 
 class TabBarController: UITabBarController {
+    private let analyticsService = AnalyticsService.shared
+    private var lastSelectedIndex: Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setValue(CustomTabBar(), forKey: "tabBar")
         UITabBar.appearance().backgroundColor = .white
         self.navigationItem.hidesBackButton = true
         delegate = self
+        lastSelectedIndex = 0
         
         configureTabBar()
         makeBoundaryLine()
@@ -31,16 +35,14 @@ class TabBarController: UITabBarController {
             }
         }
     }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("asdasd")
     }
     
     private func configureTabBar() {
         let firstViewController = HomeContainerViewController()
-        let secondViewController = InsightViewController()
-        let reactor = InsightReactor()
-        secondViewController.reactor = reactor
+        let secondViewController = UIViewController()
         let thirdViewController = StorageBoxContainerViewController()
         
         let firstNav = UINavigationController(rootViewController: firstViewController)
@@ -93,12 +95,40 @@ class CustomTabBar: UITabBar {
 
 extension TabBarController: UITabBarControllerDelegate {
     public func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if tabBarController.selectedViewController == viewController { return false }
         guard let fromView = tabBarController.selectedViewController?.view,
               let toView = viewController.view else { return false }
+        let index = self.viewControllers?.firstIndex(of: viewController)
+        let clickedItem = index == 0 ? "홈" : index == 1 ? "작성" : "보관함"
+        
+        switch lastSelectedIndex {
+        case 0:
+            if let selectedNavController = tabBarController.selectedViewController as? UINavigationController, let homeVC = selectedNavController.topViewController as? HomeContainerViewController {
+                if homeVC.homeTapState.value == .search {
+                    analyticsService.fromSearchTabbarClick(label: clickedItem)
+                } else {
+                    analyticsService.fromExchangeTabbarClick(label: clickedItem)
+                }
+            } else {
+                print("home not found")
+            }
+        case 1:
+            break
+        case 2:
+            analyticsService.fromStorageTabbarClick(label: clickedItem)
+        default:
+            break
+        }
+        
+        lastSelectedIndex = index
+        
+        
+        print("탭 \(index ?? -1) 선택됨")
+        
         
         if fromView == toView {
             return false
-        } else if tabBarController.viewControllers?.firstIndex(of: viewController) == 1{
+        } else if index == 1{
             let vc = InsightViewController()
             let reactor = InsightReactor()
             vc.reactor = reactor
@@ -108,8 +138,7 @@ extension TabBarController: UITabBarControllerDelegate {
                 fromView.pushViewController(vc, animated: true)
             }
             return false
-        }
-        else {
+        } else {
             UIView.transition(from: fromView, to: toView, duration: 0, options: .transitionCrossDissolve)
             return true
         }
