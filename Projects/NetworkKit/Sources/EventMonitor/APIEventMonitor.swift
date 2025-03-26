@@ -38,7 +38,7 @@ public final class APIEventMonitor: EventMonitor {
         📲 Data: \(response.data?.toPrettyPrintedString ?? "")
 
         """)
-        if response.response?.statusCode ?? 0 >= 300, let prettyPrintedData = response.data?.toPrettyPrintedString {
+        if response.response?.statusCode ?? 0 >= 300, let prettyPrintedData = response.data?.toPrettyPrintedString, !prettyPrintedData.contains("J003") {
             DispatchQueue.main.async {
                 self.showAlert(code: response.response?.statusCode ?? 0, message: prettyPrintedData)
             }
@@ -73,7 +73,7 @@ public final class APIDebugEventMonitor: EventMonitor {
     public init() { }
     
     public func request<Value>(_ request: DataRequest, didParseResponse response: DataResponse<Value, AFError>) {
-        if response.response?.statusCode ?? 0 >= 300, let prettyPrintedData = response.data?.toPrettyPrintedString {
+        if response.response?.statusCode ?? 0 >= 300, let prettyPrintedData = response.data?.toPrettyPrintedString, !prettyPrintedData.contains("J003") {
             DispatchQueue.main.async {
                 self.showAlert(code: response.response?.statusCode ?? 0, message: prettyPrintedData)
             }

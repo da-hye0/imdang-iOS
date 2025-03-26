@@ -103,6 +103,7 @@ class WriteInsightEtcViewController: UIViewController, View {
                 case "단지 시설":
                     owner.reactor?.action.onNext( .tapFacilityInfoConfirm(owner.baseInfo.complexFacility) )
                 case "호재":
+                    owner.nextButtonView.isEnable = false
                     owner.reactor?.action.onNext( .tapFavorableNewsInfoConfirm(owner.baseInfo.favorableNews) )
                 default:
                     break
@@ -142,6 +143,7 @@ class WriteInsightEtcViewController: UIViewController, View {
                     guard let tabBarController = self.tabBarController else { return }
                     tabBarController.selectedIndex = 2
                 }
+                self.nextButtonView.isEnable = true
             })
             .disposed(by: disposeBag)
     }
