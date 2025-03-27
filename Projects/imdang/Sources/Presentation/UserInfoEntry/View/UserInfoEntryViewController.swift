@@ -41,12 +41,12 @@ final class UserInfoEntryViewController: BaseViewController, View {
             $0.attributedText = attributedString
         }
     }
-    private var nicknameTextField = CommomTextField(placeholderText: "임당이", textfieldType: .stringInput)
+    private var nicknameTextField = CommomTextField(placeholderText: "예시) 임당이", textfieldType: .stringInput)
     private var niknameFooterView = TextFieldFooterView()
     
     //birth
     private var birthHeaderView = TextFieldHeaderView(title: "생년월일", isEssential: false)
-    private var birthTextField = CommomTextField(placeholderText: "2000.01.01", textfieldType: .dateInput)
+    private var birthTextField = CommomTextField(placeholderText: "예시) 2024.01.01", textfieldType: .dateInput)
     private var birthFooterView = TextFieldFooterView()
     
     //gender
@@ -359,7 +359,7 @@ final class UserInfoEntryViewController: BaseViewController, View {
     private func validateBirthInput(text: String?) -> UserInfoEntryReactor.Action {
         guard let text = text, !text.isEmpty else {
 //            birthFooterView.rx.textFieldErrorMessage.onNext("생년월일을 입력해주세요.")
-            return .changeBirthTextFieldState(.done)
+            return .changeBirthTextFieldState(.normal) // 필수입력이 아니라서 빈값일때 normal로 변경
         }
 
         let dateFormatter = DateFormatter()
