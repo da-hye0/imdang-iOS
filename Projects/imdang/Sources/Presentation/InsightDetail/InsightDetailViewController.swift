@@ -492,6 +492,14 @@ extension InsightDetailViewController: UITableViewDataSource, UITableViewDelegat
         switch section {
         case 0,1,2:
             return 0
+        case 3:
+            return insight.infra.text != "" ? UITableView.automaticDimension : 0
+        case 4:
+            return insight.complexEnvironment.text != "" ? UITableView.automaticDimension : 0
+        case 5:
+            return insight.complexFacility.text != "" ? UITableView.automaticDimension : 0
+        case 6:
+            return insight.favorableNews.text != "" ? UITableView.automaticDimension : 0
         default:
             return UITableView.automaticDimension
         }
@@ -511,7 +519,6 @@ extension InsightDetailViewController: UITableViewDataSource, UITableViewDelegat
             return footerView
         case 6:
             footerView.config(text: insight.favorableNews.text)
-            footerView.separatorView.isHidden = true
             return footerView
         default:
             return nil
@@ -527,18 +534,27 @@ extension InsightDetailViewController: UITableViewDataSource, UITableViewDelegat
         } else {
             categoryTapView.isHidden = true
         }
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        switch indexPath.section {
-            case 2,3,4,5,6:
-            if indexPath.row == 0 {
-                categoryTapView.setCurrentIndex.accept(indexPath.section - 2)
-                headerView.setCurrentIndex.accept(indexPath.section - 2)
-            }
-        default:
+        
+        guard scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating else {
             return
         }
-    }
+        
+        let visibleRows = tableView.indexPathsForVisibleRows ?? []
+        
+        for indexPath in visibleRows {
+            if (2...6).contains(indexPath.section), indexPath.row == 0 {
+                
+                let indexPath = IndexPath(row: 0, section: indexPath.section)
+                let cellRect = tableView.rectForRow(at: indexPath)
+                let cellTopY = cellRect.origin.y - scrollView.contentOffset.y
 
+                if cellTopY < 100 {
+                    let currentIndex = indexPath.section - 2
+                    categoryTapView.setCurrentIndex.accept(currentIndex)
+                    headerView.setCurrentIndex.accept(currentIndex)
+                    break
+                }
+            }
+        }
+    }
 }

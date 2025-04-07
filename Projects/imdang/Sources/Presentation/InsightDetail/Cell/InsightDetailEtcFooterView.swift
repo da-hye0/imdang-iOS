@@ -22,17 +22,12 @@ final class InsightDetailEtcFooterView: UICollectionReusableView {
         $0.numberOfLines = 0
     }
     
-    let separatorView = UIView().then {
-        $0.backgroundColor = .grayScale50
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .white
         
         addSubview(titleLabel)
         addSubview(descriptionLabel)
-        addSubview(separatorView)
         
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(24)
@@ -81,22 +76,8 @@ final class InsightDetailEtcFooterView: UICollectionReusableView {
                 $0.horizontalEdges.equalToSuperview().inset(20)
                 $0.height.equalTo(height)
             }
-            
-            separatorView.snp.makeConstraints {
-                $0.top.equalTo(descriptionLabel.snp.bottom).offset(32)
-                $0.horizontalEdges.equalToSuperview()
-                $0.height.equalTo(8)
-                $0.bottom.equalToSuperview()
-            }
         } else {
             titleLabel.removeFromSuperview()
-            
-            separatorView.snp.makeConstraints {
-                $0.top.equalToSuperview().offset(32)
-                $0.horizontalEdges.equalToSuperview()
-                $0.height.equalTo(8)
-                $0.bottom.equalToSuperview()
-            }
         }
     }
 }
