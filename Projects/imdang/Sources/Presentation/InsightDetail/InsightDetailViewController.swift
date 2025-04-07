@@ -228,6 +228,17 @@ final class InsightDetailViewController: BaseViewController {
         }
     }
     
+    private func reloadInsight() {
+        insightDetailViewModel.loadInsightDetail(id: self.insight.insightId)
+            .subscribe { [self] data in
+                if let data = data {
+                    self.insight = data
+                    self.tableView.reloadData()
+                }
+            }
+            .disposed(by: disposeBag)
+    }
+    
     private func bindActions() {
         requestButton.rx.tap
             .subscribe(with: self, onNext: { owner, _ in
@@ -264,7 +275,7 @@ final class InsightDetailViewController: BaseViewController {
                             owner.showAlert(text: "교환을 수락했어요.\n교환한 인사이트는 보관함에서\n확인할 수 있어요.", type: .moveButton, imageType: .circleCheck) {
                                 owner.exchangeState = .accepted
                                 owner.updateButton()
-                                owner.tableView.reloadData()
+                                owner.reloadInsight()
                             } etcAction: {
                                 self.dismiss(animated: true)
                                 self.navigationController?.popToRootViewController(animated: true)

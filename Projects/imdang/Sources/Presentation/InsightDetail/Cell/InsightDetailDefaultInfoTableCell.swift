@@ -229,9 +229,9 @@ final class InsightDetailDefaultInfoTableCell: UITableViewCell {
             }
         case .pending:
             if isMyInsight {
-                descriptionImageView.image = ImdangImages.Image(resource: .detailRequestReply)
-            } else {
                 descriptionImageView.image = ImdangImages.Image(resource: .detailWaiting)
+            } else {
+                descriptionImageView.image = ImdangImages.Image(resource: .detailRequestReply)
             }
         default:
             break
