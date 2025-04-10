@@ -82,7 +82,7 @@ class InsightReactor: Reactor {
             if let image = mainImage {
                 var data = detail.toDTO()
                 data.insightId = updateInsightId
-                return insightService.createInsight(dto: data, image: image)
+                return insightService.createInsight(dto: data, images: [image])
                     .map { success in
                         print("Upload success state updated: \(success)")
                         self.detail.memberNickname = UserdefaultKey.memberNickname

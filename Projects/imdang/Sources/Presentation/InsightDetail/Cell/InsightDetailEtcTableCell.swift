@@ -39,12 +39,19 @@ final class InsightDetailEtcTableCell: UITableViewCell {
     }
     
     private func addSubviews() {
-        [stackView].forEach { contentView.addSubview($0) }
+        [separatorView, stackView].forEach { contentView.addSubview($0) }
     }
     
     private func makeConstraints() {
-        stackView.snp.makeConstraints {
+        
+        separatorView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(32)
+            $0.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(8)
+        }
+        
+        stackView.snp.makeConstraints {
+            $0.top.equalTo(separatorView.snp.bottom).offset(32)
             $0.bottom.equalToSuperview()
             $0.horizontalEdges.equalToSuperview().inset(20)
         }

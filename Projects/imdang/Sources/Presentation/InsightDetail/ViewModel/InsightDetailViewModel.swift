@@ -29,6 +29,29 @@ final class InsightDetailViewModel {
     private var disposeBag = DisposeBag()
     private let networkManager = NetworkManager()
     
+    func loadInsightDetail(id: String) -> Observable<InsightDetail?> {
+        let parameters: [String: Any] = [
+            "insightId": id
+        ]
+        
+        let endpoint = Endpoint<InsightDetailResponse>(
+            baseURL: .imdangAPI,
+            path: "/insights/detail",
+            method: .get,
+            headers: [.contentType("application/json"), .authorization(bearerToken: UserdefaultKey.accessToken)],
+            parameters: parameters
+        )
+        
+        return networkManager.request(with: endpoint)
+            .map { data in
+                return data.toDetail()
+            }
+            .catch { error in
+                print("Error: \(error.localizedDescription)")
+                return Observable.just(nil)
+            }
+    }
+    
     func requestInsight(thisInsightId: String, myInsightId: String? = nil, couponId: String? = nil) -> Observable<Bool> {
         var parameters: [String: Any] = [
             "requestedInsightId": thisInsightId,

@@ -96,11 +96,6 @@ final class InsightDetailDefaultInfoTableCell: UITableViewCell {
         $0.contentMode = .scaleAspectFit
     }
     
-    private let separatorView = UIView().then {
-        $0.backgroundColor = .grayScale50
-    }
-    
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -118,7 +113,7 @@ final class InsightDetailDefaultInfoTableCell: UITableViewCell {
     }
     
     private func addSubviews() {
-        [addressTitleLabel, addressLabel, naverMapView, dateTitleLabel, dateLabel, transTitleLabel, transLabel, accessTitleLabel, accessLabel, summaryTitleLabel, summaryLabel, descriptionImageView, separatorView].forEach { contentView.addSubview($0) }
+        [addressTitleLabel, addressLabel, naverMapView, dateTitleLabel, dateLabel, transTitleLabel, transLabel, accessTitleLabel, accessLabel, summaryTitleLabel, summaryLabel, descriptionImageView].forEach { contentView.addSubview($0) }
     }
     
     private func makeConstraints() {
@@ -177,12 +172,6 @@ final class InsightDetailDefaultInfoTableCell: UITableViewCell {
             $0.top.equalTo(summaryTitleLabel.snp.bottom).offset(4)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
-        
-        separatorView.snp.makeConstraints {
-            $0.top.equalTo(summaryLabel.snp.bottom).offset(32)
-            $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(8)
-        }
     }
     
     private func calculateLabelHeight(text: String) -> CGFloat {
@@ -229,9 +218,9 @@ final class InsightDetailDefaultInfoTableCell: UITableViewCell {
             }
         case .pending:
             if isMyInsight {
-                descriptionImageView.image = ImdangImages.Image(resource: .detailRequestReply)
-            } else {
                 descriptionImageView.image = ImdangImages.Image(resource: .detailWaiting)
+            } else {
+                descriptionImageView.image = ImdangImages.Image(resource: .detailRequestReply)
             }
         default:
             break
@@ -243,8 +232,6 @@ final class InsightDetailDefaultInfoTableCell: UITableViewCell {
                 $0.horizontalEdges.equalToSuperview()
                 $0.height.equalTo(608 + calculateLabelHeight(text: info.summary))
             }
-            
-            separatorView.isHidden = false
         } else {
             contentView.snp.remakeConstraints {
                 $0.top.equalToSuperview()
@@ -255,8 +242,6 @@ final class InsightDetailDefaultInfoTableCell: UITableViewCell {
                 $0.top.equalTo(summaryLabel.snp.bottom).offset(32)
                 $0.horizontalEdges.equalToSuperview()
             }
-            
-            separatorView.isHidden = true
         }
     }
 }

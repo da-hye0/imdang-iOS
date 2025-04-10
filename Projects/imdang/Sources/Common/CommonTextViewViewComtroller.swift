@@ -149,6 +149,11 @@ class CommonTextViewViewComtroller: BaseViewController {
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        textView.becomeFirstResponder()
+    }
+
     private func addsubViews() {
         leftNaviItemView.addSubview(NavigationTitleLabel)
         textFieldBackground.addSubview(textView)

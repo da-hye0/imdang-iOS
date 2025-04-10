@@ -187,7 +187,7 @@ extension InsightBaseInfoViewController: UICollectionViewDataSource {
             }
             
             if indexPath.section == 3 {
-                cell.titleTextField.setConfigure(placeholderText: "예시) 2024.01.01", textfieldType: .dateInput)
+                cell.titleTextField.setConfigure(placeholderText: "예시) \(Date().toString().prefix(10).replacingOccurrences(of: "-", with: "."))", textfieldType: .dateInput)
             }
             
             return cell

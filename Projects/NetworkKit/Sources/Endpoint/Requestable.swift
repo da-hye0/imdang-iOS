@@ -5,7 +5,7 @@
 //  Created by 임대진 on 11/25/24.
 //
 
-import Foundation
+import UIKit
 
 public import Alamofire
 
@@ -28,6 +28,12 @@ public protocol Requestable {
     var encoding: ParameterEncoding { get }
     
     func makeURL() -> String
+}
+
+public protocol MultipartRequestable: Requestable {
+    var images: [UIImage] { get }
+    var jsonData: Data { get }
+    var isCreate: Bool { get }
 }
 
 public extension Requestable {

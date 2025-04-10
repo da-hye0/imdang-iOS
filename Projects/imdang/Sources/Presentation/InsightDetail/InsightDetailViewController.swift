@@ -228,6 +228,17 @@ final class InsightDetailViewController: BaseViewController {
         }
     }
     
+    private func reloadInsight() {
+        insightDetailViewModel.loadInsightDetail(id: self.insight.insightId)
+            .subscribe { [self] data in
+                if let data = data {
+                    self.insight = data
+                    self.tableView.reloadData()
+                }
+            }
+            .disposed(by: disposeBag)
+    }
+    
     private func bindActions() {
         requestButton.rx.tap
             .subscribe(with: self, onNext: { owner, _ in
@@ -264,7 +275,7 @@ final class InsightDetailViewController: BaseViewController {
                             owner.showAlert(text: "교환을 수락했어요.\n교환한 인사이트는 보관함에서\n확인할 수 있어요.", type: .moveButton, imageType: .circleCheck) {
                                 owner.exchangeState = .accepted
                                 owner.updateButton()
-                                owner.tableView.reloadData()
+                                owner.reloadInsight()
                             } etcAction: {
                                 self.dismiss(animated: true)
                                 self.navigationController?.popToRootViewController(animated: true)
@@ -481,6 +492,14 @@ extension InsightDetailViewController: UITableViewDataSource, UITableViewDelegat
         switch section {
         case 0,1,2:
             return 0
+        case 3:
+            return insight.infra.text != "" ? UITableView.automaticDimension : 0
+        case 4:
+            return insight.complexEnvironment.text != "" ? UITableView.automaticDimension : 0
+        case 5:
+            return insight.complexFacility.text != "" ? UITableView.automaticDimension : 0
+        case 6:
+            return insight.favorableNews.text != "" ? UITableView.automaticDimension : 0
         default:
             return UITableView.automaticDimension
         }
@@ -500,7 +519,6 @@ extension InsightDetailViewController: UITableViewDataSource, UITableViewDelegat
             return footerView
         case 6:
             footerView.config(text: insight.favorableNews.text)
-            footerView.separatorView.isHidden = true
             return footerView
         default:
             return nil
@@ -516,18 +534,27 @@ extension InsightDetailViewController: UITableViewDataSource, UITableViewDelegat
         } else {
             categoryTapView.isHidden = true
         }
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        switch indexPath.section {
-            case 2,3,4,5,6:
-            if indexPath.row == 0 {
-                categoryTapView.setCurrentIndex.accept(indexPath.section - 2)
-                headerView.setCurrentIndex.accept(indexPath.section - 2)
-            }
-        default:
+        
+        guard scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating else {
             return
         }
-    }
+        
+        let visibleRows = tableView.indexPathsForVisibleRows ?? []
+        
+        for indexPath in visibleRows {
+            if (2...6).contains(indexPath.section), indexPath.row == 0 {
+                
+                let indexPath = IndexPath(row: 0, section: indexPath.section)
+                let cellRect = tableView.rectForRow(at: indexPath)
+                let cellTopY = cellRect.origin.y - scrollView.contentOffset.y
 
+                if cellTopY < 100 {
+                    let currentIndex = indexPath.section - 2
+                    categoryTapView.setCurrentIndex.accept(currentIndex)
+                    headerView.setCurrentIndex.accept(currentIndex)
+                    break
+                }
+            }
+        }
+    }
 }

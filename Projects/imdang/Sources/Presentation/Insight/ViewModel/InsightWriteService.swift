@@ -15,64 +15,31 @@ final class InsightWriteService {
     
     private var disposeBag = DisposeBag()
     private let networkManager = NetworkManager()
-
-    func createInsight(dto: InsightDTO, image: UIImage) -> Observable<Bool> {
-        return Observable<Bool>.create { observer in
-            guard let value = Bundle.main.object(forInfoDictionaryKey: "IMDANG_API") as? String, let baseUrl = value.removingPercentEncoding else {
-                observer.onNext(false)
-                observer.onCompleted()
-                return Disposables.create()
-            }
-            
-            let url = dto.insightId == nil ? baseUrl+"/insights/create" : baseUrl+"/insights/update"
-            
-            guard let jsonData = try? JSONEncoder().encode(dto) else {
-                return Disposables.create()
-            }
-            
-            let headers: HTTPHeaders = [
-                "Authorization": "Bearer \(UserdefaultKey.accessToken)"
-            ]
-            AF.upload(multipartFormData: { multipartFormData in
-                multipartFormData.append(jsonData, withName: dto.insightId == nil ? "createInsightCommand" : "updateInsightCommand", mimeType: "application/json")
-                
-                if let imageData = image.jpegData(compressionQuality: 0.8) {
-                    multipartFormData.append(imageData, withName: "mainImage", fileName: "image.jpeg", mimeType: "image/jpeg")
-                }
-                
-            }, to: url, method: .post, headers: headers)
-            .validate()
-            .response { response in
-                if (200..<300).contains(response.response?.statusCode ?? 0) {
-                    
-                    if let data = response.data, !data.isEmpty {
-                        print("""
-                        📲 NETWORK Response LOG
-                        📲 StatusCode: \(response.response?.statusCode ?? 0)
-                        📲 Data: \(response.data?.toPrettyPrintedString ?? "")
-                        """)
-                        observer.onNext(true)
-                        observer.onCompleted()
-                    } else {
-                        observer.onNext(false)
-                        observer.onCompleted()
-                    }
-                } else {
-                    if let errorData = response.data {
-                        do {
-                            let decodedError = try JSONDecoder().decode(BasicResponse.self, from: errorData)
-                            print("❌ 에러 메세지: \(decodedError.message)")
-                            print("❌ 에러 코드: \(response.response?.statusCode ?? -1)")
-                        } catch {
-                            observer.onError(error)
-                        }
-                    } else {
-                        observer.onError(NSError(domain: "Network Error", code: response.response?.statusCode ?? -1, userInfo: nil))
-                    }
-                }
-            }
-            return Disposables.create()
+    
+    func createInsight(dto: InsightDTO, images: [UIImage]) -> Observable<Bool> {
+        
+        guard let jsonData = try? JSONEncoder().encode(dto) else {
+            return Observable.just(false)
         }
+        
+        let endpoint = MultipartEndpoint<InsightIdResponse>(
+            baseURL: .imdangAPI,
+            path: dto.insightId == nil ? "/insights/create" : "/insights/update",
+            method: .post,
+            headers: [.authorization(bearerToken: UserdefaultKey.accessToken)],
+            images: images,
+            jsonData: jsonData,
+            isCreate: dto.insightId == nil
+        )
+        
+        return networkManager.upload(with: endpoint)
+            .map { _ in
+                return true
+            }
+            .catch { error in
+                print("Error: \(error.localizedDescription)")
+                return Observable.just(false)
+            }
     }
     
     func getCoordinates(address: String, completion: @escaping (Double?, Double?) -> Void) {
