@@ -139,7 +139,7 @@ extension MyPageViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 1
-        case 1: return 2
+        case 1: return 1
         case 2: return 3
         default: return 0
         }
@@ -168,8 +168,6 @@ extension MyPageViewController: UITableViewDataSource, UITableViewDelegate {
             cell.selectionStyle = .none
             if indexPath.row == 0 {
                 cell.configure(title: "작성한 인사이트", num: "\(info?.insightCount ?? 0)건")
-            } else {
-                cell.configure(title: "누적 교환", num: "\(info?.requestCount ?? 0)건")
             }
             return cell
             
@@ -183,7 +181,7 @@ extension MyPageViewController: UITableViewDataSource, UITableViewDelegate {
                 cell.configure(title: "서비스 이용 약관")
             } else {
                 cell.selectionStyle = .none
-                cell.configure(title: "버전 정보", version: "버전 정보 1.0.0")
+                cell.configure(title: "버전 정보", version: "현재 버전 1.0.0")
             }
             return cell
         default:

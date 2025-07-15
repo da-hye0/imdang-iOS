@@ -18,7 +18,7 @@ class SecondCell: UICollectionViewCell {
     private let gradientLayer = CAGradientLayer()
     
     private let titleLabel = UILabel().then {
-        $0.setTextWithLineHeight(text: "이런 분들을 위해\n1:1 교환 시스템을 도입했어요", lineHeight: 30)
+        $0.setTextWithLineHeight(text: "이런 분들을 위해\n손쉬운 가이드라인을 도입했어요", lineHeight: 30)
         $0.font = .pretenSemiBold(20)
         $0.textColor = .white
         $0.numberOfLines = 0

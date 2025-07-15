@@ -129,13 +129,11 @@ class WriteInsightEtcViewController: UIViewController, View {
             .distinctUntilChanged()
             .subscribe(onNext: { result in
                 self.showAlert(text: "인사이트 업로드가 완료되었어요.\n작성한 내 인사이트는 보관함에서\n확인할 수 있어요.", type: .moveButton) { [self] in
-                    if let image = reactor.mainImage {
-                        self.analyticsService.insightWrite()
-                        let vc = InsightDetailViewController(insight: reactor.detail, mainImage: image, showEditButton: false)
-                        self.navigationController?.pushViewController(vc, animated: true)
-                        if let firstVC = self.navigationController?.viewControllers.first {
-                            self.navigationController?.setViewControllers([firstVC, vc], animated: true)
-                        }
+                    self.analyticsService.insightWrite()
+                    let vc = InsightDetailViewController(insight: reactor.detail, mainImage: reactor.mainImage[0], showEditButton: false)
+                    self.navigationController?.pushViewController(vc, animated: true)
+                    if let firstVC = self.navigationController?.viewControllers.first {
+                        self.navigationController?.setViewControllers([firstVC, vc], animated: true)
                     }
                 } etcAction: {
                     self.analyticsService.insightWrite()

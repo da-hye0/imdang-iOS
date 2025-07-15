@@ -24,7 +24,7 @@ class FirstCell: UICollectionViewCell {
         $0.textColor = .mainOrange500
     }
     private let scriptLabel = UILabel().then {
-        $0.text = "임장 후기 1:1 교환으로, 더 깊은 임장 지식을 쌓아보세요."
+        $0.text = "임장 후기 가이드라인으로, 더 깊은 임장 지식을 쌓아보세요."
         $0.font = .pretenMedium(14)
         $0.textColor = .grayScale700
     }
