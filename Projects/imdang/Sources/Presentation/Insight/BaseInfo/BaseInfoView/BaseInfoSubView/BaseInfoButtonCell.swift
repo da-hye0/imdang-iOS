@@ -20,7 +20,7 @@ class BaseInfoButtonCell: UICollectionViewCell {
         contentView.backgroundColor = .white
         layout()
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()

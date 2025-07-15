@@ -11,82 +11,174 @@ import RxSwift
 import ReactorKit
 import RxRelay
 
+
 class BaseInfoImageCell: UICollectionViewCell {
-    static let identifier = "ImageCell"
+    var disposeBag = DisposeBag()
+    static let identifier = "BaseInfoImageCell"
+    private let collectionView: UICollectionView
+    private var images = [UIImage]()
+    let imageTapped = PublishRelay<Void>()
+    let imageDeleted = PublishRelay<Int>()
+
+    override init(frame: CGRect) {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 8
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        super.init(frame: frame)
+
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.register(ImageItemCell.self, forCellWithReuseIdentifier: ImageItemCell.identifier)
+        collectionView.register(ImageAddCell.self, forCellWithReuseIdentifier: ImageAddCell.identifier)
+
+        contentView.addSubview(collectionView)
+        collectionView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
+        collectionView.dataSource = self
+        collectionView.delegate = self
+    }
+
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    func setImages(_ images: [UIImage]) {
+        self.images = images
+        collectionView.reloadData()
+    }
+
+    func getImages() -> [UIImage] {
+        return images
+    }
+}
+
+extension BaseInfoImageCell: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    let disposeBag = DisposeBag()
-    let buttonTapState = PublishRelay<Void>()
-    
-    private let imageButton = UIButton(type: .custom).then {
-        $0.imageView?.contentMode = .scaleAspectFill
-        $0.imageView?.clipsToBounds = true
-        $0.setImage(UIImage(resource: .photo), for: .normal)
-        $0.backgroundColor = .grayScale50
-        $0.layer.borderWidth = 1
-        $0.layer.cornerRadius = 4
-        $0.layer.borderColor = UIColor.grayScale100.cgColor
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return min(images.count + 1, 10)
     }
     
-    private let addButton = ImageTextButton(type: .imageFirst, horizonPadding: 12, spacing: 1).then {
-        $0.customText.text = "이미지 추가"
-        $0.customText.textColor = .grayScale700
-        $0.customText.font = .pretenBold(12)
-        $0.customImage.image = ImdangImages.Image(systemName: "plus")
-        $0.customImage.tintColor = .grayScale700
-        $0.imageSize = 12
-        
-        $0.layer.cornerRadius = 6
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.grayScale100.cgColor
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if indexPath.item == 0 {
+            return CGSize(width: 100, height: 100)
+        } else {
+            return CGSize(width: 140, height: 100)
+        }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.item == 0 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageAddCell.identifier, for: indexPath) as! ImageAddCell
+            cell.addButton.rx.tap
+                .bind(to: imageTapped)
+                .disposed(by: cell.disposeBag)
+            return cell
+        } else {
+            let imageIndex = indexPath.item - 1
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageItemCell.identifier, for: indexPath) as! ImageItemCell
+            cell.imageView.image = images[imageIndex]
+            
+            cell.onDelete = { [weak self, weak collectionView] in
+                guard let self, imageIndex < self.images.count else { return }
+                self.images.remove(at: imageIndex)
+                self.imageDeleted.accept(imageIndex)
+                collectionView?.reloadData()
+            }
+            return cell
+        }
+    }
+}
+
+class ImageItemCell: UICollectionViewCell {
+    var disposeBag = DisposeBag()
+    static let identifier = "ImageItemCell"
+    let imageView = UIImageView()
+    let deleteButton = UIButton()
+
+    var onDelete: (() -> Void)?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.addSubview(imageView)
+        contentView.addSubview(deleteButton)
+
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 6
+        imageView.snp.makeConstraints { $0.edges.equalToSuperview()}
+
+        deleteButton.setImage(UIImage(resource: .imdangXmark), for: .normal)
+
+        deleteButton.layer.cornerRadius = 10
+        deleteButton.snp.makeConstraints {
+            $0.top.trailing.equalToSuperview().inset(4)
+            $0.size.equalTo(20)
+        }
+
+        deleteButton.rx.tap
+            .bind { [weak self] in self?.onDelete?() }
+            .disposed(by: disposeBag)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+    
+}
+
+class ImageAddCell: UICollectionViewCell {
+    var disposeBag = DisposeBag()
+    static let identifier = "ImageAddCell"
+    
+    let addButton = UIButton(type: .custom)
+    private let stackView = UIStackView()
+    private let plusImageView = UIImageView()
+    private let titleLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.backgroundColor = .grayScale25
-        layout()
-        imageButtonTapState()
+        setupLayout()
+        setupStyle()
     }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func layout() {
-        contentView.addSubview(imageButton)
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    private func setupLayout() {
         contentView.addSubview(addButton)
-        
-        imageButton.snp.makeConstraints {
-            $0.leading.equalToSuperview()
-            $0.width.equalTo(140)
-            $0.height.equalTo(100)
+        addButton.snp.makeConstraints { $0.edges.equalToSuperview() }
+
+        stackView.axis = .horizontal
+        stackView.spacing = 4
+        stackView.alignment = .center
+        stackView.distribution = .equalCentering
+
+        plusImageView.setContentHuggingPriority(.required, for: .horizontal)
+        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        stackView.addArrangedSubview(plusImageView)
+        stackView.addArrangedSubview(titleLabel)
+
+        addButton.addSubview(stackView)
+        stackView.snp.makeConstraints {
+            $0.center.equalToSuperview()
         }
-        
-        addButton.snp.makeConstraints {
-            $0.leading.equalTo(imageButton.snp.trailing).offset(20)
-            $0.centerY.equalToSuperview()
-        }
     }
-    
-    func resultImageAccept(image: UIImage) {
-        self.imageButton.setImage(image, for: .normal)
-    }
-    
-    func imageButtonTapState() {
-        imageButton.rx.tap
-            .bind(to: buttonTapState)
-            .disposed(by: disposeBag)
-        
-        addButton.rx.tap
-            .bind(to: buttonTapState)
-            .disposed(by: disposeBag)
-    }
-    
-    func setButtonConfigure() {
-        addButton.imageSize = 0
-        addButton.customText.text = "이미지 수정"
-        addButton.customText.textColor = .grayScale700
-        addButton.customText.font = .pretenBold(12)
-        addButton.customImage.image = nil
-        addButton.spacing = 0
+
+    private func setupStyle() {
+        plusImageView.image = UIImage(
+            systemName: "plus",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)
+        )
+        plusImageView.tintColor = .grayScale700
+
+        titleLabel.text = "이미지추가"
+        titleLabel.font = .pretenSemiBold(12)
+        titleLabel.textColor = .grayScale700
+
+        addButton.layer.cornerRadius = 6
+        addButton.layer.borderWidth = 1
+        addButton.layer.borderColor = UIColor.grayScale100.cgColor
+        addButton.backgroundColor = .white
     }
 }
+

@@ -27,8 +27,8 @@ class InsightBaseInfoViewController: UIViewController, TotalAppraisalFootereView
     
     private let insightService = InsightWriteService()
     private var baseInfo = InsightDetail.emptyInsight
-    private var imageData: UIImage?
     private var nextButtonView = NextAndBackButton()
+    var imageDataList: [UIImage] = []
     
     private var selectedIndexPaths: [BehaviorRelay<Set<IndexPath>>] = [
         BehaviorRelay<Set<IndexPath>>(value: []), // Section 4
@@ -73,7 +73,7 @@ class InsightBaseInfoViewController: UIViewController, TotalAppraisalFootereView
     }
 
     private let items: [(header: String, script: String, itemType: ItemType, itemData: [String])]
-        = [("표시 이미지", "", .image, [""]),
+        = [("표시 이미지", "최대 10개 등록 가능", .image, [""]),
             ("제목", "최소1자-최대20자", .text, [""]),
             ("단지 주소", "", .address, ["지번 주소", "단지 아파트 명"]),
             ("다녀온 날짜", "", .text, [""]),
@@ -90,7 +90,7 @@ class InsightBaseInfoViewController: UIViewController, TotalAppraisalFootereView
             .subscribe(with: self, onNext: { owner, _ in
                 if owner.nextButtonView.isEnable {
                     owner.reactor?.action.onNext(
-                        .tapBaseInfoConfirm(owner.baseInfo, owner.imageData)
+                        .tapBaseInfoConfirm(owner.baseInfo, owner.imageDataList)
                     )
                 } else {
                     owner.showToast(message: "필수 항목을 모두 작성해주세요")
@@ -102,7 +102,7 @@ class InsightBaseInfoViewController: UIViewController, TotalAppraisalFootereView
         checkSectionState
             .subscribe(with: self, onNext: { owner, arr in
                 owner.nextButtonView.nextButtonEnable(value: arr.filter { $0 == .done }.count == 8 ? true : false)
-//                owner.nextButtonView.nextButtonEnable(value: true)
+                owner.nextButtonView.nextButtonEnable(value: true)
             })
             .disposed(by: disposeBag)
 
@@ -167,16 +167,16 @@ extension InsightBaseInfoViewController: UICollectionViewDataSource {
                         updateSectionState(index: indexPath.section, newState: text != "" ? TextFieldState.done : TextFieldState.normal)
                     } else if indexPath.section == 3 {
                         baseInfo.visitAt = text.map { $0.replacingOccurrences(of: ".", with: "-") } ?? ""
-
+                        
                         let dateFormatter = DateFormatter()
                         dateFormatter.dateFormat = "yyyy.MM.dd"
-
+                        
                         if dateFormatter.date(from: cell.titleTextField.text ?? "") == nil {
                             updateSectionState(index: indexPath.section, newState: TextFieldState.normal)
                         } else {
                             updateSectionState(index: indexPath.section, newState: TextFieldState.done)
                         }
-                      
+                        
                     }
                 })
                 .disposed(by: cell.disposeBag)
@@ -197,9 +197,9 @@ extension InsightBaseInfoViewController: UICollectionViewDataSource {
                 withReuseIdentifier: BaseInfoButtonCell.identifier,
                 for: indexPath
             ) as! BaseInfoButtonCell
-
+            
             let itemArray = items[indexPath.section].itemData
-
+            
             cell.configure(title: itemArray[indexPath.row])
             let selectedSetRelay = selectedIndexPaths[indexPath.section - 4]
             
@@ -227,94 +227,131 @@ extension InsightBaseInfoViewController: UICollectionViewDataSource {
             default:
                 break
             }
-
-                cell.buttonView.rx.tap
-                    .subscribe(onNext: { [weak self] in
-                        guard let self else { return }
-
-                        var selectedSet = selectedSetRelay.value
-
-                        if indexPath.section == 6 {
-                            // 단일 선택
-                            if selectedSet.contains(indexPath) {
-                                selectedSet.remove(indexPath) // 선택 해제
-                            } else {
-                                selectedSet = [indexPath] // 선택 변경
-                            }
+            
+            cell.buttonView.rx.tap
+                .subscribe(onNext: { [weak self] in
+                    guard let self else { return }
+                    
+                    var selectedSet = selectedSetRelay.value
+                    
+                    if indexPath.section == 6 {
+                        // 단일 선택
+                        if selectedSet.contains(indexPath) {
+                            selectedSet.remove(indexPath) // 선택 해제
                         } else {
-                            // 다중 선택
-                            if selectedSet.contains(indexPath) {
-                                selectedSet.remove(indexPath)
-                            } else {
-                                selectedSet.insert(indexPath)
-                            }
+                            selectedSet = [indexPath] // 선택 변경
                         }
-
-                        selectedSetRelay.accept(selectedSet)
-                        
-                        switch indexPath.section {
-                        case 4:
-//                            if let visitTimes = reactor?.detail.visitTimes {
-//                                baseInfo.visitTimes = visitTimes
-//                            } else {
-//                                baseInfo.visitTimes = selectedSet.map { itemArray[$0.row] }
-//                            }
+                    } else {
+                        // 다중 선택
+                        if selectedSet.contains(indexPath) {
+                            selectedSet.remove(indexPath)
+                        } else {
+                            selectedSet.insert(indexPath)
+                        }
+                    }
+                    
+                    selectedSetRelay.accept(selectedSet)
+                    
+                    switch indexPath.section {
+                    case 4:
+                        if let visitTimes = reactor?.detail.visitTimes {
+                            baseInfo.visitTimes = visitTimes
+                        } else {
                             baseInfo.visitTimes = selectedSet.map { itemArray[$0.row] }
-                            
-                            updateSectionState(index: indexPath.section, newState: baseInfo.visitTimes.isEmpty == false ? TextFieldState.done : TextFieldState.normal)
-                            
-                        case 5:
-                            baseInfo.visitMethods = selectedSet.map { itemArray[$0.row] }
-                            updateSectionState(index: indexPath.section, newState: baseInfo.visitMethods.isEmpty == false ? TextFieldState.done : TextFieldState.normal)
-                            
-                        case 6:
-                            baseInfo.access = selectedSet.map { itemArray[$0.row] }[safe: 0]?.replacingOccurrences(of: " ", with: "_") ?? ""
-                            updateSectionState(index: indexPath.section, newState: baseInfo.access != "" ? TextFieldState.done : TextFieldState.normal)
-                            
-                          
-                        default:
-                            break
                         }
-                    })
-                    .disposed(by: cell.disposeBag)
-
-                return cell
+                        baseInfo.visitTimes = selectedSet.map { itemArray[$0.row] }
+                        
+                        updateSectionState(index: indexPath.section, newState: baseInfo.visitTimes.isEmpty == false ? TextFieldState.done : TextFieldState.normal)
+                        
+                    case 5:
+                        baseInfo.visitMethods = selectedSet.map { itemArray[$0.row] }
+                        updateSectionState(index: indexPath.section, newState: baseInfo.visitMethods.isEmpty == false ? TextFieldState.done : TextFieldState.normal)
+                        
+                    case 6:
+                        baseInfo.access = selectedSet.map { itemArray[$0.row] }[safe: 0]?.replacingOccurrences(of: " ", with: "_") ?? ""
+                        updateSectionState(index: indexPath.section, newState: baseInfo.access != "" ? TextFieldState.done : TextFieldState.normal)
+                        
+                        
+                    default:
+                        break
+                    }
+                })
+                .disposed(by: cell.disposeBag)
+            
+            return cell
             
         case .image:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BaseInfoImageCell.identifier, for: indexPath) as! BaseInfoImageCell
             
-            if let url = URL(string: baseInfo.mainImage), let mainImage = UIImageView().then({ $0.kf.setImage(with: url)}).image {
-                cell.resultImageAccept(image: mainImage)
-                self.imageData = mainImage
-                updateSectionState(index: indexPath.section, newState: TextFieldState.done)
+            
+            if imageDataList.isEmpty, let url = URL(string: baseInfo.mainImage) {
+                KingfisherManager.shared.retrieveImage(with: url) { result in
+                    switch result {
+                    case .success(let value):
+                        Task { @MainActor in
+                            self.imageDataList = [value.image]
+                            cell.setImages(self.imageDataList)
+                            self.updateSectionState(index: indexPath.section, newState: .done)
+                        }
+                    case .failure:
+                        break
+                    }
+                }
+            } else {
+                cell.setImages(imageDataList)
             }
             
-            cell.buttonTapState
+            cell.imageTapped
                 .subscribe(onNext: { [weak self] in
                     guard let self else { return }
                     
                     let imageModal = BaseInfoViewBottomSheet()
                     imageModal.modalPresentationStyle = .overFullScreen
-                    present(imageModal, animated: false, completion: nil)
+                    self.present(imageModal, animated: false)
                     
-                    imageModal.onPhotoLibrarySelected = { [self] image in
-                        cell.resultImageAccept(image: image)
-                        
-                        self.imageData = image
-                        cell.setButtonConfigure()
-                        self.updateSectionState(index: indexPath.section, newState: self.imageData != nil ? TextFieldState.done : TextFieldState.normal)
+                    imageModal.onPhotosSelected = { [weak self] selectedImages in
+                        guard let self else { return }
+
+                        for image in selectedImages {
+                            if self.imageDataList.count >= 10 { // 10장
+                                self.imageDataList.removeLast()
+                            }
+                            self.imageDataList.insert(image, at: 0)
+                        }
+
+                        cell.setImages(self.imageDataList)
+                        self.updateSectionState(index: indexPath.section, newState: .done)
                     }
-                    imageModal.onCameraSelected = { image in
-                        cell.resultImageAccept(image: image)
-                        
-                        self.imageData = image
-                        self.updateSectionState(index: indexPath.section, newState: self.imageData != nil ? TextFieldState.done : TextFieldState.normal)
-                        cell.setButtonConfigure()
+
+                    imageModal.onCameraSelected = { [weak self] image in
+                        guard let self else { return }
+
+                        if self.imageDataList.count >= 10 {
+                            self.imageDataList.removeLast()
+                        }
+                        self.imageDataList.insert(image, at: 0)
+
+                        cell.setImages(self.imageDataList)
+                        self.updateSectionState(index: indexPath.section, newState: .done)
                     }
+
                 })
                 .disposed(by: disposeBag)
+            
+            cell.imageDeleted
+                .subscribe(onNext: { [weak self] deletedIndex in
+                    guard let self else { return }
+                    
+                    self.imageDataList.remove(at: deletedIndex)
+                    cell.setImages(self.imageDataList)
+                    
+                    let newState: TextFieldState = self.imageDataList.isEmpty ? .normal : .done
+                    self.updateSectionState(index: indexPath.section, newState: newState)
+                })
+                .disposed(by: disposeBag)
+            
             return cell
-                 
+            
         case .address:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BaseInfoAddressCell.identifier, for: indexPath) as! BaseInfoAddressCell
             
@@ -322,7 +359,7 @@ extension InsightBaseInfoViewController: UICollectionViewDataSource {
                 baseInfo.address.siDo == ""
                 ? cell.configure(title: "지번 주소")
                 : cell.setData(title: baseInfo.address.toString())
-            
+
             } else {
                 baseInfo.apartmentComplex.name == ""
                 ? cell.configure(title: "아파트 단지 명")
@@ -350,21 +387,24 @@ extension InsightBaseInfoViewController: UICollectionViewDataSource {
                         }
                     }
                     
-                    DispatchQueue.main.async {
-                        if self.baseInfo.address.siDo != "서울" {
+                    if self.baseInfo.address.siDo != "서울" {
+                        DispatchQueue.main.async {
                             self.showAlert(text: "지금은 서울 지역만 서비스가 가능합니다.", type: .confirmOnly, dimAction: false , comfrimAction: {
                                 self.baseInfo.address = Address(siDo: "", siGunGu: "", eupMyeonDong: "", buildingNumber: "")
                                 self.baseInfo.apartmentComplex.name = ""
                                 collectionView.reloadSections(IndexSet([2]))
                             })
                         }
+                        return
                     }
                     
                     if let buildingName = (data["buildingName"]) as? String {
                         baseInfo.apartmentComplex.name = buildingName
                     }
-                    
-                    collectionView.reloadSections(IndexSet([2]))
+
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadSections(IndexSet(integer: 2))
+                    }
                 }
             }
             

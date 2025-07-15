@@ -52,8 +52,7 @@ class IntroViewController: BaseViewController {
         collectionView.register(FirstCell.self, forCellWithReuseIdentifier: "FirstCell")
         collectionView.register(SecondCell.self, forCellWithReuseIdentifier: "SecondCell")
         collectionView.register(ThirdCell.self, forCellWithReuseIdentifier: "ThirdCell")
-        collectionView.register(FourthCell.self, forCellWithReuseIdentifier: "FourthCell")
-        collectionView.register(FifthCell.self, forCellWithReuseIdentifier: "FifthCell")
+        collectionView.register(IntroLastCell.self, forCellWithReuseIdentifier: "LastCell")
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -85,7 +84,7 @@ class IntroViewController: BaseViewController {
 
 extension IntroViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 5
+        return 4
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -101,9 +100,7 @@ extension IntroViewController: UICollectionViewDataSource, UICollectionViewDeleg
         case 2:
             return collectionView.dequeueReusableCell(withReuseIdentifier: "ThirdCell", for: indexPath) as! ThirdCell
         case 3:
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "FourthCell", for: indexPath) as! FourthCell
-        case 4:
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "FifthCell", for: indexPath) as! FifthCell
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "LastCell", for: indexPath) as! IntroLastCell
         default:
             return UICollectionViewCell()
         }
@@ -117,8 +114,6 @@ extension IntroViewController: UICollectionViewDataSource, UICollectionViewDeleg
             return CGSize(width: width, height: 450)
         } else if indexPath.section == 2 {
             return CGSize(width: width, height: 465)
-        } else if indexPath.section == 3 {
-            return CGSize(width: width, height: 450)
         } else {
             return CGSize(width: width, height: 244)
         }

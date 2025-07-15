@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import Then
 
-class FifthCell: UICollectionViewCell {
+class IntroLastCell: UICollectionViewCell {
     
     private let titleLabel = UILabel().then {
         $0.setTextWithLineHeight(text: "더 궁금한 점이 있다면\n아래 계정으로 문의해주세요", lineHeight: 30)

@@ -26,6 +26,10 @@ class BaseInfoAddressCell: UICollectionViewCell {
         configureActions()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
