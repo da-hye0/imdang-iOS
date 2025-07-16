@@ -20,8 +20,8 @@ class TextFieldHeaderView: UIView {
     var limitNumber: Int?
     
     var titleLabel = UILabel().then {
-        $0.font = .pretenMedium(14)
-        $0.textColor = UIColor.grayScale600
+        $0.font = .pretenSemiBold(14)
+        $0.textColor = UIColor.grayScale700
     }
     
     private var EssentialLabel = UILabel().then {
@@ -33,12 +33,12 @@ class TextFieldHeaderView: UIView {
     private var signImage = UIImageView()
     
     private var descriptionLabel = UILabel().then {
-        $0.font = .pretenMedium(14)
+        $0.font = .pretenMedium(12)
         $0.textColor = UIColor.grayScale500
     }
     
     private var textNumLabel = UILabel().then {
-        $0.font = .pretenMedium(14)
+        $0.font = .pretenMedium(12)
         $0.textColor = UIColor.mainOrange500
     }
     

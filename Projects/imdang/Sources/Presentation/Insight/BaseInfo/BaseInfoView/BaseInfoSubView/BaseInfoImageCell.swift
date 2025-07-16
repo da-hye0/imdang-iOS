@@ -37,6 +37,8 @@ class BaseInfoImageCell: UICollectionViewCell {
 
         collectionView.dataSource = self
         collectionView.delegate = self
+        
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
     }
 
 

@@ -70,6 +70,8 @@ class InsightBaseInfoViewController: UIViewController, TotalAppraisalFootereView
             $0.bottom.equalToSuperview()
             $0.height.equalTo(96)
         }
+        
+        collectionView.contentInset = UIEdgeInsets(top: 23, left: 0, bottom: 0, right: 0)
     }
 
     private let items: [(header: String, script: String, itemType: ItemType, itemData: [String])]
@@ -462,7 +464,7 @@ extension InsightBaseInfoViewController: UICollectionViewDelegateFlowLayout {
             let width = (collectionView.bounds.width - 40 - 10) / 2
             return CGSize(width: width, height: 52)
         default:
-            let width = collectionView.bounds.width - 40
+            let width = collectionView.bounds.width
             return CGSize(width: width, height: 100)
         }
     }
